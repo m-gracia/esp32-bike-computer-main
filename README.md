@@ -49,29 +49,29 @@ Some features have been removed from this version because there are not longer n
 - **ESP32 Mini D1**<br>
     It could work with other ESP32 boards but I have chose this for the small size. Be sure to choose one with two cores p.e. WROOM-32.
     
-    ![esp32 mini d1](docs\images\esp32.jpg)
+    ![esp32 mini d1](docs/images/esp32.jpg)
 
 - **GPRS + GSM board SIM808**<br>
     Don't forget to choose two apropiate antennas for GPS and GSM radios.
 
-    ![SIM808](docs\images\sim808.jpg)
+    ![SIM808](docs/images/sim808.jpg)
 
 - **SPI TFT**<br>
     One round 240x240 1,28" based on GC9A01 chip, and other square 240x280 1,69" based on ST7789 chip. These are cheap, fits on the case and they can be seen pretty clear under the sun light.
 
-    ![GC9A01 1,28" round LCD](docs\images\roundLCD.jpg)
-    ![ST7789 1,69" square LCD](docs\images\squareLCD.jpg)
+    ![GC9A01 1,28" round LCD](docs/images/roundLCD.jpg)
+    ![ST7789 1,69" square LCD](docs/images/squareLCD.jpg)
 
 - **DJI Action2 case**<br>
     It is waterproof, both LCD's fits inside and you can remove one of the buttons to pass the cable through it. It has a standard gopro clip for holding it wherever you want. Choose the bracket that fits you better.
 
-    ![DJI Action2 case](docs\images\DJIAction2Case.jpg)
-    ![GoPro Holder](docs\images\goproHolder.jpg)
+    ![DJI Action2 case](docs/images/DJIAction2Case.jpg)
+    ![GoPro Holder](docs/images/goproHolder.jpg)
 
 - **BLE 4.0 TPMS**<br>
     Bluetooth BLE 4.0 TPMS to control the tire pressure for Android / IOS application. Do not use BLE 5.0 model, is not supported by ESP32 at this moment.
     
-    ![BLE4 TPMS](docs\images\tpms.jpg)
+    ![BLE4 TPMS](docs/images/tpms.jpg)
 
 - **Other stuff**
     - 2 * 8 pin 5cm dupond cables for LCDs.

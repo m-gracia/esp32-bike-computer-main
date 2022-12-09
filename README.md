@@ -18,7 +18,7 @@
 A small homemade motorcycle computer based on ESP32 controller to show some usefull information.
 The project has been done thinking on the modularity, so new features can be added (or removed).
 
-![ESP32 bike computer](docs\images\img01.jpg)<br>
+![ESP32 bike computer](docs/images/img01.jpg)<br>
 *ESP32 bike computer mounted on a Yamaha Tracer 9*
 
 

@@ -49,7 +49,7 @@ Some features have been removed from this version because there are not longer n
 - **ESP32 Mini D1**<br>
     It could work with other ESP32 boards but I have chose this for the small size. Be sure to choose one with two cores p.e. WROOM-32.
     
-    ![esp32 mini d1](docs/images/esp32.jpg)
+    ![ESP32 Mini D1](docs/images/esp32.jpg)
 
 - **GPRS + GSM board SIM808**<br>
     Don't forget to choose two apropiate antennas for GPS and GSM radios.
@@ -124,12 +124,28 @@ Otherwise:
      - Upload the "data" folder files to ESP32 SPIFFS.
 
 
-5. Build the PCB following the "schemes/main.fzz". If you want to fit it on a 3x7cm protoboard only the following ESP32 pins must be soldered: RST, SVP, 26, 18, 19, 23, 22, 21, 17, 16, GND, VCC. 
+5. Build the PCB following the [schemes/main.fzz](schemes/main.fzz) or [schemes/main_v2.fzz](schemes/main_v2.fzz). If you want to fit it on a 3x7cm protoboard only the following ESP32 pins must be soldered: RST, SVP, 26, 18, 19, 23, 5, 3.3V, 22, 21, 17, 16, GND, VCC. 
      - [ESP32 pinout](docs/ESP32_D1_mini_pinout.png)
 
 
 ## Schemes and connections
-There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes](schemes) folder. There are created for soldering on a quick breadboard.
+There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes](schemes) folder. There are created for soldering on a quick breadboard. I have glue a small square of plastic sponge to support the SIM808 module.
+
+![Breadboard Scheme](docs/images/breadboardScheme.jpg)
+
+![Breadboard Front with plastic support](docs/images/breadboardFront.jpg)
+
+![Breadboard back](docs/images/breadboardBack.jpg)
+
+The connectors placement on the board are:
+- SIM808: S3-S9
+- ESP32 left: P3-P10
+- ESP32 right: G3-G8
+- Power terminal: C3 and C5
+
+There is a "v2" version that is untested, but the only change is the USB cable connector order for a better route on the breadboard, so it should work.
+
+![Breadboard Scheme v2](docs/images/breadboardScheme_v2.jpg)
 
 
 ## Improvements list

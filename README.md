@@ -124,7 +124,7 @@ Otherwise:
      - Upload the "data" folder files to ESP32 SPIFFS.
 
 
-5. Build the PCB following the [schemes/main.fzz](schemes/main.fzz) or [schemes/main_v2.fzz](schemes/main_v2.fzz). If you want to fit it on a 3x7cm protoboard only the following ESP32 pins must be soldered: RST, SVP, 26, 18, 19, 23, 5, 3.3V, 22, 21, 17, 16, GND, VCC. 
+5. Build the PCB following the [schemes/main.fzz](schemes/main.fzz) or [schemes/main_v2.fzz](schemes/main_v2.fzz). If you want to fit it on a 3x7cm protoboard only the following ESP32 pins must be soldered: RST, SVP, 26, 18, 19, 33, 23, 5, 3.3V, 22, 21, 17, 16, GND, VCC. 
      - [ESP32 pinout](docs/ESP32_D1_mini_pinout.png)
 
 

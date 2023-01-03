@@ -54,5 +54,4 @@ unsigned long timerDisplay = 0;
 unsigned long timerMsg = 0;
 unsigned long timerTPMS = millis() + 5000;
 
-TaskHandle_t T_initOthers = NULL;
 TaskHandle_t T_loopOthers = NULL;

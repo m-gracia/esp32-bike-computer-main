@@ -8,7 +8,7 @@
 
 // Uncomment to enable
 #define DEBUG_GPRS
-#define DEBUG_GPS
+//#define DEBUG_GPS
 //#define DEBUG_GPSRAW
 #define DEBUG_BT
 #define DEBUG_TFT

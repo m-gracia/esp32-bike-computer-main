@@ -30,16 +30,24 @@ void initGPRS(){
     }
   }
   
-  timerGPRS = 0;
   bikeGPRS = STATUS_CRIT; // Initialized but without data
   bikeGPS = STATUS_CRIT; // Initialized but without data
   DEBUG_GPRS_PRINTLN("GPRS Init end");
   DEBUG_GPS_PRINTLN("GPS Init end");
+  DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
+  DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
+  DEBUG_GPRS_PRINT("Signal Quality: "); DEBUG_GPRS_PRINTLN(gsm.getSignalQuality());
+  DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
 }
 
 void sendGPRS(){
   if (!gsm.waitForNetwork()) {
     DEBUG_GPRS_PRINTLN("GPRS Network NOT ready");
+    DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
+    DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
+    DEBUG_GPRS_PRINT("Signal Quality: "); DEBUG_GPRS_PRINTLN(gsm.getSignalQuality());
+    DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
+    
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
   } else if (!gsm.gprsConnect(gprs_apn, gprs_user, gprs_pass)){
@@ -74,5 +82,269 @@ void sendGPRS(){
 
     http_client.stop();
     DEBUG_GPRS_PRINTLN("GPRS http disconnected");
+  }
+}
+
+void getWeather(){
+  if (!gsm.waitForNetwork()) {
+    DEBUG_GPRS_PRINTLN("GPRS-W Network NOT ready");
+    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_CRIT;
+  } else if (!gsm.gprsConnect(gprs_apn, gprs_user, gprs_pass)){
+    DEBUG_GPRS_PRINTLN("GPRS-W Network NOT connected");
+    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_CRIT;
+  } else {
+    String http_url;
+
+    // Without GPS data failback to default city
+    if (bikeGPS == STATUS_OK) http_url = "/data/2.5/forecast?lat="+String(bikeLatitude,4)+"&lon="+String(bikeLongitude,4)+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
+    else http_url = "/data/2.5/forecast?id="+weather_cityId+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
+    DEBUG_GPRS_PRINT("Weather URL: ");
+    DEBUG_GPRS_PRINTLN(http_url);
+    
+    if(weather_client.get(http_url) != 0){
+      DEBUG_GPRS_PRINTLN("GPRS-W fail getting data");
+      if (bikeGPRS != STATUS_WARN) bitSet(bikeDataChanged,2);
+      bikeGPRS = STATUS_WARN;
+    } else {
+      DEBUG_GPRS_PRINTLN("GPRS-W connected OK");
+      if (bikeGPRS != STATUS_OK) bitSet(bikeDataChanged,2);
+      bikeGPRS = STATUS_OK;
+      
+      String result = weather_client.responseBody();
+      DEBUG_GPRS_PRINTLN("GPRS-W Readed:");
+      DEBUG_GPRS_PRINTLN(result);
+      result.replace('[', ' ');
+      result.replace(']', ' ');
+      
+      char jsonArray [result.length()+1];
+      result.toCharArray(jsonArray,sizeof(jsonArray));
+      jsonArray[result.length() + 1] = '\0';
+      
+      StaticJsonBuffer<1024> json_buf;
+      JsonObject &root = json_buf.parseObject(jsonArray);
+      if (!root.success()) { 
+        DEBUG_GPRS_PRINTLN("parseObject() failed");
+        return;
+      }
+
+      weatherLocation = (const char*)root["city"]["name"];
+      String idString = (const char*)root["list"]["weather"]["id"];
+      weatherIcon = idString.toInt();
+      //weatherTemperature = (const char*)root["list"]["main"]["temp"];
+      //weatherWeather = (const char*)root["list"]["weather"]["main"];
+      //weatherDescription = (const char*)root["list"]["weather"]["description"];
+      //String windspeed = (const char*)root["list"]["wind"]["speed"];
+      //weatherWind = windspeed.toFloat();
+
+      DEBUG_GPRS_PRINT("GPRS-W Icon:");
+      DEBUG_GPRS_PRINTLN(weatherIcon);
+      bitSet(bikeDataChanged,14);
+      bitSet(bikeDataChanged,15);  // Weather
+    }
+    weather_client.stop();
+    DEBUG_GPRS_PRINTLN("GPRS-W Disconnected");
+  }
+}
+
+void getMaps(){
+  if (!gsm.waitForNetwork()) {
+    DEBUG_GPRS_PRINTLN("GPRS-M Network NOT ready");
+    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_CRIT;
+  } else if (!gsm.gprsConnect(gprs_apn, gprs_user, gprs_pass)){
+    DEBUG_GPRS_PRINTLN("GPRS-M Network NOT connected");
+    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_CRIT;
+  } else {  // GPRS Ready
+
+    if (bikeGPS == STATUS_OK){  // GPS data available
+      String http_url;
+      http_url = "/REST/v1/Routes/SnapToRoad?pts="+String(bikeLatitude,4)+","+String(bikeLongitude,4)+"&intpl=false&spdl=true&spu=KPH&key="+maps_apikey;
+      DEBUG_GPRS_PRINT("Maps URL: ");
+      DEBUG_GPRS_PRINTLN(http_url);
+
+
+      if( maps_client.get(http_url) != 0){
+        DEBUG_GPRS_PRINTLN("GPRS-M fail getting data");
+        if (bikeGPRS != STATUS_WARN) bitSet(bikeDataChanged,2);
+        bikeGPRS = STATUS_WARN;
+      } else {
+        DEBUG_GPRS_PRINTLN("GPRS-M connected OK");
+        if (bikeGPRS != STATUS_OK) bitSet(bikeDataChanged,2);
+        bikeGPRS = STATUS_OK;
+        
+        String result = maps_client.responseBody();
+        DEBUG_GPRS_PRINTLN("GPRS-M Readed:");
+        DEBUG_GPRS_PRINTLN(result);
+        result.replace('[', ' ');
+        result.replace(']', ' ');
+        
+        char jsonArray [result.length()+1];
+        result.toCharArray(jsonArray,sizeof(jsonArray));
+        jsonArray[result.length() + 1] = '\0';
+        
+        StaticJsonBuffer<1536> json_buf;
+        JsonObject &root = json_buf.parseObject(jsonArray);
+        if (!root.success()) { 
+          DEBUG_GPRS_PRINTLN("parseObject() failed");
+          return;
+        }
+  
+        String tmapsStreet = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["name"];
+        String StrSpeed = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["speedLimit"];
+        int tmapsSpeed = StrSpeed.toInt();
+
+        // Clean the street name
+        // TODO - Use an array and a loop instead (more "elegant" way)
+        if(tmapsStreet.length() > 6 && tmapsStreet.startsWith(String("Calle "))){
+          tmapsStreet = tmapsStreet.substring(6);
+        }else if(tmapsStreet.length() > 8 && tmapsStreet.startsWith(String("Avenida "))){
+          tmapsStreet = tmapsStreet.substring(8);
+        }else if(tmapsStreet.length() > 6 && tmapsStreet.startsWith(String("Paseo "))){
+          tmapsStreet = tmapsStreet.substring(6);
+        }else if(tmapsStreet.length() > 7 && tmapsStreet.startsWith(String("Camino "))){
+          tmapsStreet = tmapsStreet.substring(7);
+        }else if(tmapsStreet.length() > 10 && tmapsStreet.startsWith(String("Carretera "))){
+          tmapsStreet = tmapsStreet.substring(10);
+        }else if(tmapsStreet.length() > 6 && tmapsStreet.startsWith(String("Ronda "))){
+          tmapsStreet = tmapsStreet.substring(6);
+        }else if(tmapsStreet.length() > 9 && tmapsStreet.startsWith(String("Travesía "))){
+          tmapsStreet = tmapsStreet.substring(9);
+        }else if(tmapsStreet.length() > 8 && tmapsStreet.startsWith(String("Autovía "))){
+          tmapsStreet = tmapsStreet.substring(8);
+        }else if(tmapsStreet.length() > 10 && tmapsStreet.startsWith(String("Autopista "))){
+          tmapsStreet = tmapsStreet.substring(10);
+        }else if(tmapsStreet.length() > 4 && tmapsStreet.startsWith(String("Vía "))){
+          tmapsStreet = tmapsStreet.substring(4);
+        }
+        if (tmapsStreet.length() > 3 && tmapsStreet.startsWith(String("de "))){
+          tmapsStreet = tmapsStreet.substring(3);
+        }else if(tmapsStreet.length() > 4 && tmapsStreet.startsWith(String("del "))){
+          tmapsStreet = tmapsStreet.substring(4);
+        }else if(tmapsStreet.length() > 6 && tmapsStreet.startsWith(String("de la "))){
+          tmapsStreet = tmapsStreet.substring(6);
+        }else if(tmapsStreet.length() > 7 && tmapsStreet.startsWith(String("de las "))){
+          tmapsStreet = tmapsStreet.substring(7);
+        }else if(tmapsStreet.length() > 7 && tmapsStreet.startsWith(String("de los "))){
+          tmapsStreet = tmapsStreet.substring(7);
+        }
+  
+        DEBUG_GPRS_PRINT("GPRS-M Street:");
+        DEBUG_GPRS_PRINTLN(tmapsStreet);
+        DEBUG_GPRS_PRINT("GPRS-M Speed:");
+        DEBUG_GPRS_PRINTLN(tmapsSpeed);
+
+        if (tmapsStreet != mapsStreet){
+          mapsStreet = tmapsStreet;
+          bitSet(bikeDataChanged,11);
+        }
+
+        if (tmapsSpeed != mapsSpeed){
+          mapsSpeed = tmapsSpeed;
+          bitSet(bikeDataChanged,12);
+        }
+      }
+      
+      maps_client.stop();
+      DEBUG_GPRS_PRINTLN("GPRS-M Disconnected");
+
+    } else {
+      DEBUG_GPRS_PRINTLN("GPRS-M No GPS data");
+    }
+  }
+}
+
+/* getGPS()
+ * Feed the GPS and get data
+ */
+void getGPS(){
+  float tLat, tLon, tSpeed, tAltitud; 
+  int itAltitud, tSatellites;
+  bool fix;
+  int tYear, tMonth, tDay, tHour, tMinute, tSecond;
+  int tbikeGPS = STATUS_OK;
+  
+  fix = gsm.getGPSTime(&tYear,&tMonth,&tDay,&tHour,&tMinute,&tSecond);
+  DEBUG_GPS_PRINT(F("DAY "));
+  DEBUG_GPS_PRINT(tDay);
+  DEBUG_GPS_PRINT(F("/"));
+  DEBUG_GPS_PRINT(tMonth);
+  DEBUG_GPS_PRINT(F("/"));
+  DEBUG_GPS_PRINTLN(tYear);
+  DEBUG_GPS_PRINT(F("HOUR "));
+  DEBUG_GPS_PRINT(tHour);
+  DEBUG_GPS_PRINT(F(":"));
+  DEBUG_GPS_PRINTLN(tMinute);
+  
+  if (!fix) tbikeGPS = STATUS_WARN;
+  
+  if (tYear > 2020){    // If the GPS return a realistic date
+    setTime(tHour,tMinute,tSecond,tDay,tMonth,tYear); // Update the internal clock
+    setTime(CE.toLocal(now())); // Change to our timezone
+    
+    if (bikeMonth != month()) {
+      bikeMonth = month();
+      bitSet(bikeDataChanged,7);
+    }
+    if (bikeDay != day()) {
+      bikeDay = day();
+      bitSet(bikeDataChanged,7);
+    }
+    if (bikeHour != hour()) {
+      bikeHour = hour();
+      bitSet(bikeDataChanged,6);
+    }
+    if (bikeMinute != minute()) {
+      bikeMinute = minute();
+      bitSet(bikeDataChanged,6);
+    }
+  }
+
+  fix = gsm.getGPS(&tLat,&tLon,&tSpeed,&tAltitud,&tSatellites,NULL);
+  DEBUG_GPS_PRINT(F("Speed "));
+  DEBUG_GPS_PRINTLN(String(tSpeed,1));
+  DEBUG_GPS_PRINT(F("Altitude "));
+  DEBUG_GPS_PRINTLN(tAltitud);
+  DEBUG_GPS_PRINT(F("Position "));
+  DEBUG_GPS_PRINT(String(tLat,6));
+  DEBUG_GPS_PRINT(F(" | "));
+  DEBUG_GPS_PRINTLN(String(tLon,6));
+  DEBUG_GPS_PRINT(F("Satellites "));
+  DEBUG_GPS_PRINTLN(tSatellites);
+  
+  if(!fix) tbikeGPS = STATUS_WARN;
+  
+  bikeLatitude = tLat;
+  bikeLongitude = tLon;
+
+  if (tSpeed > 250) tSpeed = 0;   // To solve some parsing problems
+  bikeSpeed = (int)tSpeed;
+
+  // Check if we are going 10% faster than we should
+  unsigned char tmapsSpeedAlert;
+  if ((bikeSpeed * 1,1) > mapsSpeed) tmapsSpeedAlert = true;
+  else tmapsSpeedAlert = false;
+  if (tmapsSpeedAlert != mapsSpeedAlert){
+    mapsSpeedAlert = tmapsSpeedAlert;
+    bitSet(bikeDataChanged,12);
+  }  
+
+  if (tAltitud < 0 || tAltitud > 3000) tAltitud = 0;  // To solve some parsing problems
+  if ( bikeHeigh != tAltitud) {
+    bikeHeigh = tAltitud;
+    bitSet(bikeDataChanged,5);      
+  }
+
+  if (tSatellites < 0 || tSatellites > 99) tSatellites = 0; // To solve some parsing problems
+  if ( bikeSatellites != tSatellites) {
+    bikeSatellites = tSatellites;
+    bitSet(bikeDataChanged,13);
+  }
+
+  if (tbikeGPS != bikeGPS){
+    bikeGPS = tbikeGPS;
+    bitSet(bikeDataChanged,9);
   }
 }

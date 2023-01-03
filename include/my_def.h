@@ -80,8 +80,8 @@ static Timezone CE(CEST, CET);
 #define TINY_GSM_MODEM_SIM808
 // Increase RX buffer if needed:
 //#define TINY_GSM_RX_BUFFER 512
-#define GPRS_PIN_TX 26
-#define GPRS_PIN_RX 19
+#define GPRS_PIN_TX 33          // <- Connected to RX pin on SIM808
+#define GPRS_PIN_RX 26          // <- Connected to TX pin on SIM808
 #include <TinyGsmClient.h>      // https://github.com/vshymanskyy/TinyGSM
 #include <ArduinoHttpClient.h>  // https://github.com/arduino-libraries/ArduinoHttpClient
 static const char http_server[] = HTTP_SERVER; // Defined in secrets.h
@@ -177,7 +177,6 @@ extern unsigned long timerMsg;
 extern unsigned long timerTPMS;
 
 // Tasks
-extern TaskHandle_t T_initOthers;
 extern TaskHandle_t T_loopOthers;
 
 #endif  // _MY_DEF_H_

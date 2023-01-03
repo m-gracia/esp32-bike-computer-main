@@ -4,31 +4,18 @@
 #include "bluetooth.h"
 #include "lcd.h"
 #include "gprs.h"
-#include "gps.h"
-#include "maps.h"
 #include "tpms.h"
-#include "weather.h"
 
 
-// TASKS ON CORE 0 //
-void initOthers (void * parameter){ 
-  initDisplay();
-  initGPRS();
-  vTaskDelete(T_initOthers);
-}
-
+// TASK ON CORE 0 //
 void loopOthers (void * parameter){
   for(;;) {
+    delay(20); // For WDog feeding
+
     if(timerDisplay < millis()){
       sendDisplay();
       timerDisplay = millis() + 180; // Every 200ms min + time on GPS
     }
-
-    if (bikeGPS != STATUS_UNK){
-      getGPS(); // Every time
-    }
-
-    delay(20); // For WDog feeding
   }
 }
 // -------------- //
@@ -38,18 +25,14 @@ void setup() {
   #ifdef DEBUG
     Serial.begin(115200);
   #endif
-  DEBUG_PRINTLN("Manuel Gracia.Nov-2022");
+  DEBUG_PRINTLN("Manuel Gracia.Ene-2023");
   DEBUG_PRINTLN("https://github.com/m-gracia");
-  DEBUG_PRINTLN("esp32-bike-computer_20221104");
-    
-  xTaskCreatePinnedToCore(
-    initOthers, /* Function to implement the task */
-    "initOthers", /* Name of the task */
-    10000,  /* Stack size in words */
-    NULL,  /* Task input parameter */
-    4,  /* Priority of the task */
-    &T_initOthers,  /* Task handle. */
-    0); /* Core where the task should run */
+  DEBUG_PRINTLN("esp32-bike-computer_20230103");
+
+  delay(1000);  // Wait until the current is stabilized
+
+  initDisplay();
+  initGPRS();
   initBT();
   initTPMS();
 
@@ -86,5 +69,9 @@ void loop() {
   if (timerTPMS < millis()){
     getTPMS();
     timerTPMS = millis() + (BTSCANTIME * 1000) + 200; // 5 sec
+  }
+  
+  if (bikeGPS != STATUS_UNK){
+    getGPS(); // Every time
   }
 }

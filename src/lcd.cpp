@@ -205,8 +205,9 @@ void sendDisplay(){
       if (bitRead(bikeDataChanged,9)){    // GPS STATUS
           DEBUG_TFT_PRINTLN("GPS CHG");
           tftS->fillRect(208,245,32,3,BLACK); // Space between gps img and city text
-          if (bikeGPS == STATUS_OK) drawBmpS("/icons/gpsOn.bmp",198,248,32,32);
-          else drawBmpS("/icons/gpsOff.bmp",198,248,32,32);
+          if (bikeGPS == STATUS_OK) drawBmpS("/icons/gpsOk.bmp",198,248,32,32);
+          else if(bikeGPS == STATUS_WARN) drawBmpS("/icons/gpsWarn.bmp",198,248,32,32);
+          else drawBmpS("/icons/gpsCrit.bmp",198,248,32,32);
         }
     
         if (bitRead(bikeDataChanged,13)){ // GPS SATELLITES

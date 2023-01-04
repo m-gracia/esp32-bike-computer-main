@@ -266,6 +266,8 @@ void getGPS(){
   int tYear, tMonth, tDay, tHour, tMinute, tSecond;
   int tbikeGPS = STATUS_OK;
   
+  DEBUG_GPSRAW_PRINTLN(gsm.getGPSraw());
+  
   fix = gsm.getGPSTime(&tYear,&tMonth,&tDay,&tHour,&tMinute,&tSecond);
   DEBUG_GPS_PRINT(F("DAY "));
   DEBUG_GPS_PRINT(tDay);
@@ -280,7 +282,7 @@ void getGPS(){
   
   if (!fix) tbikeGPS = STATUS_WARN;
   
-  if (tYear > 2020){    // If the GPS return a realistic date
+  if (tYear > 2020 and tYear < 2120){    // If the GPS return a realistic date
     setTime(tHour,tMinute,tSecond,tDay,tMonth,tYear); // Update the internal clock
     setTime(CE.toLocal(now())); // Change to our timezone
     

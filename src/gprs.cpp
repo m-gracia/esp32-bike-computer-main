@@ -41,7 +41,7 @@ void initGPRS(){
 }
 
 void sendGPRS(){
-  if (!gsm.waitForNetwork()) {
+  if (!gsm.waitForNetwork(2000L,true)) {
     DEBUG_GPRS_PRINTLN("GPRS Network NOT ready");
     DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
     DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
@@ -86,7 +86,7 @@ void sendGPRS(){
 }
 
 void getWeather(){
-  if (!gsm.waitForNetwork()) {
+  if (!gsm.waitForNetwork(2000L,true)) {
     DEBUG_GPRS_PRINTLN("GPRS-W Network NOT ready");
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
@@ -149,7 +149,7 @@ void getWeather(){
 }
 
 void getMaps(){
-  if (!gsm.waitForNetwork()) {
+  if (!gsm.waitForNetwork(2000L,true)) {
     DEBUG_GPRS_PRINTLN("GPRS-M Network NOT ready");
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;

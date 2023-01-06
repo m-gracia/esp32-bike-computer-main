@@ -122,6 +122,7 @@ extern String weatherLocation;          // City
 extern int weatherIcon;                 // Weather icon
 
 // Microsoft Maps
+#define MAPS_TXT_SIZE 19
 static const char maps_server[] = "dev.virtualearth.net";
 static const int maps_port = 80;
 static HttpClient maps_client(gsm_client, maps_server, maps_port);

@@ -102,7 +102,12 @@ void sendDisplay(){
       tftR->fillRect(50,180,145,40,BLACK); //Clear text
       tftR->setFont(FONT_SMALL);
       tftR->setCursor(50,200);
-      tftR->print(mapsStreet);
+      //Center text on screen
+      int i=0;
+      int l = (MAPS_TXT_SIZE - mapsStreet.substring(0,MAPS_TXT_SIZE).length()) /2;
+      for (i=0; l>i; i++) 
+        tftR->print(" ");
+      tftR->print(mapsStreet.substring(0,MAPS_TXT_SIZE));
     }
     
     if (bikeNotif == STATUS_CRIT){  // PHONE MESSAGE
@@ -199,36 +204,46 @@ void sendDisplay(){
         tftS->setFont(FONT_MEDIUM2);
         tftS->setTextColor(WHITE);
         tftS->setCursor(1,235);
+        //Center text on screen
+        int i=0;
+        int l = (WEATHER_TXT_SIZE - weatherLocation.substring(0,WEATHER_TXT_SIZE).length()) /2;
+        for (i=0; l>i; i++) 
+          tftS->print(" ");
         tftS->print(weatherLocation.substring(0,WEATHER_TXT_SIZE));
       }
     
       if (bitRead(bikeDataChanged,9)){    // GPS STATUS
           DEBUG_TFT_PRINTLN("GPS CHG");
           tftS->fillRect(208,245,32,3,BLACK); // Space between gps img and city text
-          if (bikeGPS == STATUS_OK) drawBmpS("/icons/gpsOk.bmp",198,248,32,32);
-          else if(bikeGPS == STATUS_WARN) drawBmpS("/icons/gpsWarn.bmp",198,248,32,32);
-          else drawBmpS("/icons/gpsCrit.bmp",198,248,32,32);
+          if (bikeGPS == STATUS_OK) drawBmpS("/icons/gpsOk.bmp",193,248,32,32);
+          else if(bikeGPS == STATUS_WARN) drawBmpS("/icons/gpsWarn.bmp",193,248,32,32);
+          else drawBmpS("/icons/gpsCrit.bmp",193,248,32,32);
         }
     
         if (bitRead(bikeDataChanged,13)){ // GPS SATELLITES
           DEBUG_TFT_PRINTLN("GPS SAT CHG");
-          tftS->fillRect(160,245,38,35,BLACK);
+          tftS->fillRect(155,245,38,35,BLACK);
           
           tftS->setFont(FONT_MEDIUM2);
           tftS->setTextColor(WHITE);
-          tftS->setCursor(160,278);
+          tftS->setCursor(155,278);
+          if(bikeSatellites < 10) tftS->print(" ");
           tftS->print(bikeSatellites);
         }
         
         if (bitRead(bikeDataChanged,5)){  // GPS HEIGHT
           DEBUG_TFT_PRINTLN("HEIGHT CHG");
           tftS->fillRect(1,245,160,3,BLACK);  // Space between img and city text
-          drawBmpS("/icons/hill.bmp",8,248,32,32);
+          //drawBmpS("/icons/hill.bmp",13,248,32,32);
+          if (bikeGPRS == STATUS_OK) drawBmpS("/icons/gprsOk.bmp",13,248,32,32);
+          else if(bikeGPRS == STATUS_WARN) drawBmpS("/icons/gprsWarn.bmp",13,248,32,32);
+          else drawBmpS("/icons/gprsCrit.bmp",13,248,32,32);
+
           
-          tftS->fillRect(40,245,112,35,BLACK);
+          tftS->fillRect(45,245,109,35,BLACK);
           tftS->setFont(FONT_MEDIUM2);
           tftS->setTextColor(WHITE);
-          tftS->setCursor(46,278);
+          tftS->setCursor(51,278);
           tftS->print(bikeHeigh);
           tftS->print("m");
         }

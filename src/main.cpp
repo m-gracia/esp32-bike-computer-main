@@ -71,7 +71,8 @@ void loop() {
     timerTPMS = millis() + (BTSCANTIME * 1000) + 200; // 5 sec
   }
   
-  if (bikeGPS != STATUS_UNK){
+  if (timerGPS < millis() && bikeGPS != STATUS_UNK){
     getGPS(); // Every time
+    timerGPS = millis() + 200;  // 200ms
   }
 }

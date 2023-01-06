@@ -172,6 +172,7 @@ extern unsigned long timerGPRS;
 extern unsigned long timerBT;
 extern unsigned long timerWeather;
 extern unsigned long timerMaps;
+extern unsigned long timerGPS;
 extern unsigned long timerDisplay;
 extern unsigned long timerMsg;
 extern unsigned long timerTPMS;

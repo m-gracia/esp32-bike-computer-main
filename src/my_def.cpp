@@ -50,6 +50,7 @@ unsigned long timerGPRS = 0;
 unsigned long timerBT = millis() + 10000;
 unsigned long timerWeather = 0;
 unsigned long timerMaps = millis() + 5000;
+unsigned long timerGPS = 0;
 unsigned long timerDisplay = 0;
 unsigned long timerMsg = 0;
 unsigned long timerTPMS = millis() + 5000;

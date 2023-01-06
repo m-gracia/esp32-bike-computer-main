@@ -79,6 +79,7 @@ Some features have been removed from this version because there are not longer n
     - 3x7cm PCB prototype breadboard.
     - Male and Female pin headers.
     - Black USB 3.0 male-female cable for ESP32 to LCD connection (9 pins).
+    - Waterproof Usb C for wall mount.
     - Iron soldering kit.
     - Small silica gel bag for the LCD case. (Optional).    
     - Silicone thermal gun for sealing the junctions. (Optional).
@@ -150,7 +151,7 @@ There is a "v2" version that is untested, but the only change is the USB cable c
 
 ## Improvements list
 
-- **A 3D design** for the ESP32+SIM808 case. Now I am using a small plastic tapperware :sweat_smile: 
+- **A 3D design** for the ESP32+SIM808 case. ~~Now I am using a small plastic tapperware :sweat_smile:~~ Done. Take a look at [3d_designs](3d_designs) folder.
 
 - **Kickstand alert**<br>
     Using and ELM327 to communicate with the ECU, but I am not able to find the correct OBD PID. There are some projects to help with it, like: https://github.com/PowerBroker2/ELMduino
@@ -164,7 +165,7 @@ There is a "v2" version that is untested, but the only change is the USB cable c
 - **Web server for configuration**<br>
     To change some values (API keys, passwords...) and save it to the EEPROM.  I had problems using the wifi and the BLE stack at the same time.
 
-- **Parking sensor.** Because... Why not?
+- **Parking sensor.** ~~Because... Why not?~~ Done. Take a look at https://github.com/m-gracia/esp32-bike-computer-back
 
 
 ## Acknowledgements

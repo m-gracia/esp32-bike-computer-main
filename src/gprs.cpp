@@ -260,15 +260,26 @@ void getMaps(){
  * Feed the GPS and get data
  */
 void getGPS(){
-  float tLat, tLon, tSpeed, tAltitud; 
-  int itAltitud, tSatellites;
-  bool fix;
-  int tYear, tMonth, tDay, tHour, tMinute, tSecond;
+  float tLat = 0;
+  float tLon = 0;
+  float tSpeed = 0; 
+  float tAltitud = 0;
+  int itAltitud = 0;
+  int tSatellites = 0;
+  bool fix = false;
+  int tYear = 0;
+  int tMonth = 0;
+  int tDay = 0;
+  int tHour = 0;
+  int tMinute = 0;
+  int tSecond = 0;
   int tbikeGPS = STATUS_OK;
   
   DEBUG_GPSRAW_PRINTLN(gsm.getGPSraw());
   
-  fix = gsm.getGPSTime(&tYear,&tMonth,&tDay,&tHour,&tMinute,&tSecond);
+  //fix = gsm.getGPSTime(&tYear,&tMonth,&tDay,&tHour,&tMinute,&tSecond);
+  fix = gsm.getGPS(&tLat,&tLon,&tSpeed,&tAltitud,&tSatellites,NULL,NULL,
+    &tYear,&tMonth,&tDay,&tHour,&tMinute,NULL);
   DEBUG_GPS_PRINT(F("DAY "));
   DEBUG_GPS_PRINT(tDay);
   DEBUG_GPS_PRINT(F("/"));
@@ -279,8 +290,22 @@ void getGPS(){
   DEBUG_GPS_PRINT(tHour);
   DEBUG_GPS_PRINT(F(":"));
   DEBUG_GPS_PRINTLN(tMinute);
+  DEBUG_GPS_PRINT(F("Speed "));
+  DEBUG_GPS_PRINTLN(String(tSpeed,1));
+  DEBUG_GPS_PRINT(F("Altitude "));
+  DEBUG_GPS_PRINTLN(tAltitud);
+  DEBUG_GPS_PRINT(F("Position "));
+  DEBUG_GPS_PRINT(String(tLat,6));
+  DEBUG_GPS_PRINT(F(" | "));
+  DEBUG_GPS_PRINTLN(String(tLon,6));
+  DEBUG_GPS_PRINT(F("Satellites "));
+  DEBUG_GPS_PRINTLN(tSatellites);
   
-  if (!fix) tbikeGPS = STATUS_WARN;
+  if (!fix) {
+    tbikeGPS = STATUS_WARN;
+    // Fallback to less acurate GPRS location and time
+    gsm.getGsmLocation(&tLat,&tLon,NULL,&tYear,&tMonth,&tDay,&tHour,&tMinute,NULL);
+  }
   
   if (tYear > 2020 and tYear < 2120){    // If the GPS return a realistic date
     setTime(tHour,tMinute,tSecond,tDay,tMonth,tYear); // Update the internal clock
@@ -303,20 +328,6 @@ void getGPS(){
       bitSet(bikeDataChanged,6);
     }
   }
-
-  fix = gsm.getGPS(&tLat,&tLon,&tSpeed,&tAltitud,&tSatellites,NULL);
-  DEBUG_GPS_PRINT(F("Speed "));
-  DEBUG_GPS_PRINTLN(String(tSpeed,1));
-  DEBUG_GPS_PRINT(F("Altitude "));
-  DEBUG_GPS_PRINTLN(tAltitud);
-  DEBUG_GPS_PRINT(F("Position "));
-  DEBUG_GPS_PRINT(String(tLat,6));
-  DEBUG_GPS_PRINT(F(" | "));
-  DEBUG_GPS_PRINTLN(String(tLon,6));
-  DEBUG_GPS_PRINT(F("Satellites "));
-  DEBUG_GPS_PRINTLN(tSatellites);
-  
-  if(!fix) tbikeGPS = STATUS_WARN;
   
   bikeLatitude = tLat;
   bikeLongitude = tLon;

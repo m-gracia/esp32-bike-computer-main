@@ -94,7 +94,7 @@ If you do not want or need this function you can forget this step and comment th
 ```
 
 Otherwise: 
-- Download the files from "webpage" folder.
+- Download the files from [webpage](webpage) folder.
 - Edit the sql scheme file, set your passwords and create a MariaDB database with the scheme and data to store the information.
 - Edit the php files with your database server information.
 - Save both php files on a folder served by the web server.
@@ -140,7 +140,7 @@ There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes
 
 The connectors placement on the board are:
 - SIM808: S3-S9
-- ESP32 left: P3-P10
+- ESP32 left: P3-P10,Q6
 - ESP32 right: G3-G8
 - Power terminal: C3 and C5
 

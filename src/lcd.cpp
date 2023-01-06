@@ -140,7 +140,7 @@ void sendDisplay(){
       tftS->print(tftMsgTitle.substring(0,30));
       tftS->setTextColor(WHITE);
       tftS->setFont(FONT_MEDIUM2);
-      tftS->setCursor(1,110);
+      tftS->setCursor(1,140);
       //tftS->print(tftMsgBody.substring(0,36));
       tftS->print(tftMsgBody);
       

@@ -303,13 +303,13 @@ void getGPS(){
   
   if (!fix) {
     tbikeGPS = STATUS_WARN;
-    // Fallback to less acurate GPRS location and time
+    // Failover to less acurate GPRS location and time
     gsm.getGsmLocation(&tLat,&tLon,NULL,&tYear,&tMonth,&tDay,&tHour,&tMinute,NULL);
   }
   
   if (tYear > 2020 and tYear < 2120){    // If the GPS return a realistic date
     setTime(tHour,tMinute,tSecond,tDay,tMonth,tYear); // Update the internal clock
-    setTime(CE.toLocal(now())); // Change to our timezone
+    if (fix) setTime(CE.toLocal(now())); // Change to our timezone only if taken from GPS (UTC)
     
     if (bikeMonth != month()) {
       bikeMonth = month();

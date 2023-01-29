@@ -2,6 +2,7 @@
 #define _MY_DEF_H_
 #include <Arduino.h>
 #include "secrets.h" // To store secret information used here. You must create first. Look on https://github.com/m-gracia for the contents.
+#define LED_PIN 02  //Onboard led
 
 // Bluetooth
 // https://specificationrefs.bluetooth.com/assigned-values/Appearance%20Values.pdf

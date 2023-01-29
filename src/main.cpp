@@ -27,10 +27,17 @@ void setup() {
   #endif
   DEBUG_PRINTLN("Manuel Gracia.Ene-2023");
   DEBUG_PRINTLN("https://github.com/m-gracia");
-  DEBUG_PRINTLN("esp32-bike-computer_20230103");
+  DEBUG_PRINTLN("esp32-bike-computer_20230129");
 
-  delay(1000);  // Wait until the current is stabilized
+  pinMode(LED_PIN,OUTPUT);
+  for(int i=0;i<4; i++){  // Wait until the current is stabilized
+    if (digitalRead(LED_PIN)) digitalWrite(LED_PIN,LOW);
+    else digitalWrite(LED_PIN,HIGH);
+    delay(500);
+  }
+  digitalWrite(LED_PIN,HIGH);
 
+  // Init Setup
   initDisplay();
   initGPRS();
   initBT();
@@ -46,6 +53,7 @@ void setup() {
       0); // Core where the task should run
       
   DEBUG_PRINTLN("Setup end");
+  digitalWrite(LED_PIN,LOW);
 }
 
 void loop() {

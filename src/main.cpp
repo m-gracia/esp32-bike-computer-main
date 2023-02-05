@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "gprs.h"
 #include "tpms.h"
+#include "httpsrv.h"
 
 
 // TASK ON CORE 0 //
@@ -16,6 +17,8 @@ void loopOthers (void * parameter){
       sendDisplay();
       timerDisplay = millis() + 180; // Every 200ms min + time on GPS
     }
+
+    getWeb();
   }
 }
 // -------------- //
@@ -39,6 +42,7 @@ void setup() {
 
   // Init Setup
   initDisplay();
+  initWeb();
   initGPRS();
   initBT();
   initTPMS();

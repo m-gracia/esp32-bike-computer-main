@@ -132,6 +132,18 @@ extern String mapsStreet;                   // Street
 extern int mapsSpeed;                       // Speed limit
 extern bool mapsSpeedAlert;                 // Speed limit exceded
 
+// Webserver
+#include <WiFi.h>
+#include <WebServer.h>
+//#include <HTTPUpdateServer.h>
+//#include <AsyncTCP.h>
+//#include <ESPAsyncWebServer.h>
+static const char wifi_ssid[] = "JARVIS";
+static const char wifi_passwd[] = WIFI_PASS;  // Defined in secrets.h
+static const char ota_passwd[] = OTA_PASS;    // Defined in secrets.h
+static WebServer webSrv(80);
+//static HTTPUpdateServer updateWebServer;
+
 //Status IDs
 #define STATUS_UNK 8        // Unknown
 #define STATUS_CRIT 2       // Critical

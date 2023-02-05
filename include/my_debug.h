@@ -14,6 +14,7 @@
 #define DEBUG_TFT
 #define DEBUG_MSG
 //#define DEBUG_TPMS
+#define DEBUG_WEB
 
 
 
@@ -77,6 +78,14 @@
     #define DEBUG_TPMS_PRINTLN(x)
     #endif
 
+    #ifdef DEBUG_WEB
+    #define DEBUG_WEB_PRINT(x)  Serial.print(x)
+    #define DEBUG_WEB_PRINTLN(x)  Serial.println(x)
+    #else
+    #define DEBUG_WEB_PRINT(x)
+    #define DEBUG_WEB_PRINTLN(x)
+    #endif
+
 #else
     #define DEBUG_PRINT(x)
     #define DEBUG_PRINTLN(x)
@@ -94,6 +103,8 @@
     #define DEBUG_MSG_PRINTLN(x)
     #define DEBUG_TPMS_PRINT(x)
     #define DEBUG_TPMS_PRINTLN(x)
+    #define DEBUG_WEB_PRINT(x)
+    #define DEBUG_WEB_PRINTLN(x)
 #endif
 
 #endif  // _MY_DEBUG_H_

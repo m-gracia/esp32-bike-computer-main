@@ -32,7 +32,7 @@ void setup() {
   //disableCore0WDT();
 
   #ifdef DEBUG
-    Serial.begin(115200);
+    Serial.begin(921600);
   #endif
   DEBUG_PRINTLN("Manuel Gracia.Abr-2023");
   DEBUG_PRINTLN("https://github.com/m-gracia");

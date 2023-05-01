@@ -281,7 +281,7 @@ void useGPRS(){
     //Check for Maps information
     if (timerMaps < millis()){
       getMaps();
-      timerMaps = millis() + 10000; // 10 sec
+      timerMaps = millis() + 20000; // 20 sec
     }
   }
 }

@@ -39,10 +39,10 @@ void setup() {
   DEBUG_PRINTLN("esp32-bike-computer_20230430");
 
   pinMode(LED_PIN,OUTPUT);
-  for(int i=0;i<4; i++){  // Wait until the current is stabilized
+  for(int i=0;i<10; i++){  // Wait until the current is stabilized
     if (digitalRead(LED_PIN)) digitalWrite(LED_PIN,LOW);
     else digitalWrite(LED_PIN,HIGH);
-    delay(500);
+    delay(200);
   }
   digitalWrite(LED_PIN,HIGH);
 

@@ -95,7 +95,6 @@ static const char gprs_pass[] = GPRS_PASS;     // Defined in secrets.h
 static HardwareSerial gsmDev(1);
 static TinyGsm gsm(gsmDev);
 static TinyGsmClient gsm_client(gsm);
-static HttpClient http_client(gsm_client, http_server, http_port);
 extern int bikeHeigh;                // GPS Heigh
 extern int bikeSpeed;                // GPS Speed
 extern unsigned char bikeHour;       // GPS hour
@@ -112,7 +111,6 @@ extern float bikeLongitude;          // GPS Longitude
 #include <ArduinoJson.h>    // https://github.com/bblanchon/ArduinoJson
 static const char weather_server[] = "api.openweathermap.org";
 static const int weather_port = 80;
-static HttpClient weather_client(gsm_client, weather_server, weather_port);
 static String weather_apikey = WEATHER_APIKEY; // Defined in secrets.h
 static String weather_cityId = WEATHER_CITYID; // Default city ID. Defined in secrets.h
 extern String weatherLocation;          // City
@@ -126,7 +124,6 @@ extern int weatherIcon;                 // Weather icon
 #define MAPS_TXT_SIZE 15
 static const char maps_server[] = "dev.virtualearth.net";
 static const int maps_port = 80;
-static HttpClient maps_client(gsm_client, maps_server, maps_port);
 static String maps_apikey = MAPS_APIKEY;    // Defined in secrets.h
 extern String mapsStreet;                   // Street
 extern int mapsSpeed;                       // Speed limit

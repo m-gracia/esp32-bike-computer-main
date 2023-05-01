@@ -66,21 +66,9 @@ void setup() {
 }
 
 void loop() {
-  if (timerGPRS < millis() && bikeGPRS != STATUS_UNK){
-    sendGPRS();
-    if (bikeGPRS != STATUS_OK) timerGPRS = millis() + 10000;    // On error recheck in 10 sec
-    else timerGPRS = millis() + 300000; // 5 min
-  }
-
-  if (timerWeather < millis() && bikeGPRS != STATUS_UNK){
-    getWeather();
-    if (bikeGPRS != STATUS_OK) timerWeather = millis() + 10000;   // On error recheck in 10 sec
-    else timerWeather = millis() + 600000;  // 10 min
-  }
-
-  if (timerMaps < millis() && bikeGPRS != STATUS_UNK){
-    getMaps();
-    timerMaps = millis() + 10000; // 10 sec
+  if ((timerGPRS < millis() || timerWeather < millis() || timerMaps < millis()) 
+    && bikeGPRS != STATUS_UNK){
+      useGPRS();
   }
 
   if (timerTPMS < millis()){
@@ -90,6 +78,9 @@ void loop() {
 
   if (timerGPS < millis() && bikeGPS != STATUS_UNK){
     getGPS(); // Every time
-    timerGPS = millis() + 200;  // 200ms
+    timerGPS = millis() + 1000;  // 1s
+    
+    if (digitalRead(LED_PIN)) digitalWrite(LED_PIN,LOW);
+    else digitalWrite(LED_PIN,HIGH);
   }
 }

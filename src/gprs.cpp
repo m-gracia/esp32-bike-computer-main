@@ -34,59 +34,15 @@ void initGPRS(){
   bikeGPS = STATUS_CRIT; // Initialized but without data
   DEBUG_GPRS_PRINTLN("GPRS Init end");
   DEBUG_GPS_PRINTLN("GPS Init end");
-  DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
-  DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
-  DEBUG_GPRS_PRINT("Signal Quality: "); DEBUG_GPRS_PRINTLN(gsm.getSignalQuality());
-  DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
+  //DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
+  //DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
+  //DEBUG_GPRS_PRINT("Signal Quality: "); DEBUG_GPRS_PRINTLN(gsm.getSignalQuality());
+  //DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
 }
 
-void sendGPRS(){
-  if (!gsm.waitForNetwork(2000L,true)) {
-    DEBUG_GPRS_PRINTLN("GPRS Network NOT ready");
-    DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
-    DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
-    DEBUG_GPRS_PRINT("Signal Quality: "); DEBUG_GPRS_PRINTLN(gsm.getSignalQuality());
-    DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
-    
-    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
-    bikeGPRS = STATUS_CRIT;
-  } else if (!gsm.gprsConnect(gprs_apn, gprs_user, gprs_pass)){
-    DEBUG_GPRS_PRINTLN("GPRS Network NOT connected");
-    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
-    bikeGPRS = STATUS_CRIT;
-  } else {
-    unsigned char gprsEnvio;
-    // Send poweron flag the first time, otherwise send if the phone is connected.
-    if(firstGPRS) gprsEnvio = STATUS_POWERON;
-    else gprsEnvio = bikeBT;
-    
-    String http_url;
-      http_url = String(http_path) + "/p.php?u=0&p=" + String(web_passw) + "&s=" + String(gprsEnvio);
-      http_url = http_url + "&a=" + String(bikeHeigh);
-      http_url = http_url + "&la=" + String(bikeLatitude,8);
-      http_url = http_url + "&l=" + String(bikeLongitude,8);
-      DEBUG_GPRS_PRINT("Web URL: ");
-      DEBUG_GPRS_PRINTLN(http_url);
-
-    if(http_client.get(http_url) != 0){
-      DEBUG_GPRS_PRINTLN("GPRS fail get http");
-      if (bikeGPRS != STATUS_WARN) bitSet(bikeDataChanged,2);
-      bikeGPRS = STATUS_WARN;
-    } else {
-      DEBUG_GPRS_PRINTLN("GPRS http connected OK");
-      // Change the status on success
-      if(firstGPRS) firstGPRS = false;
-      if(bikeGPRS != STATUS_OK) bitSet(bikeDataChanged,2);
-      bikeGPRS = STATUS_OK;
-    }
-
-    http_client.stop();
-    DEBUG_GPRS_PRINTLN("GPRS http disconnected");
-  }
-}
 
 void getWeather(){
-  if (!gsm.waitForNetwork(2000L,true)) {
+  /*if (!gsm.waitForNetwork(2000L,true)) {
     DEBUG_GPRS_PRINTLN("GPRS-W Network NOT ready");
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
@@ -94,14 +50,16 @@ void getWeather(){
     DEBUG_GPRS_PRINTLN("GPRS-W Network NOT connected");
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
-  } else {
+  } else {*/
     String http_url;
 
     // Without GPS data failback to default city
-    if (bikeGPS == STATUS_OK) http_url = "/data/2.5/forecast?lat="+String(bikeLatitude,4)+"&lon="+String(bikeLongitude,4)+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
+    if (bikeGPS == STATUS_OK || bikeGPS == STATUS_WARN) http_url = "/data/2.5/forecast?lat="+String(bikeLatitude,4)+"&lon="+String(bikeLongitude,4)+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
     else http_url = "/data/2.5/forecast?id="+weather_cityId+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
     DEBUG_GPRS_PRINT("Weather URL: ");
     DEBUG_GPRS_PRINTLN(http_url);
+
+    HttpClient weather_client(gsm_client, weather_server, weather_port);
     
     if(weather_client.get(http_url) != 0){
       DEBUG_GPRS_PRINTLN("GPRS-W fail getting data");
@@ -145,11 +103,11 @@ void getWeather(){
     }
     weather_client.stop();
     DEBUG_GPRS_PRINTLN("GPRS-W Disconnected");
-  }
+  //}
 }
 
 void getMaps(){
-  if (!gsm.waitForNetwork(2000L,true)) {
+  /*if (!gsm.waitForNetwork(2000L,true)) {
     DEBUG_GPRS_PRINTLN("GPRS-M Network NOT ready");
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
@@ -157,14 +115,15 @@ void getMaps(){
     DEBUG_GPRS_PRINTLN("GPRS-M Network NOT connected");
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
-  } else {  // GPRS Ready
+  } else {  // GPRS Ready*/
 
-    if (bikeGPS == STATUS_OK){  // GPS data available
+    if (bikeGPS == STATUS_OK || bikeGPS == STATUS_WARN){  // GPS data available
       String http_url;
       http_url = "/REST/v1/Routes/SnapToRoad?pts="+String(bikeLatitude,4)+","+String(bikeLongitude,4)+"&intpl=false&spdl=true&spu=KPH&key="+maps_apikey;
       DEBUG_GPRS_PRINT("Maps URL: ");
       DEBUG_GPRS_PRINTLN(http_url);
 
+      HttpClient maps_client(gsm_client, maps_server, maps_port);
 
       if( maps_client.get(http_url) != 0){
         DEBUG_GPRS_PRINTLN("GPRS-M fail getting data");
@@ -253,8 +212,80 @@ void getMaps(){
     } else {
       DEBUG_GPRS_PRINTLN("GPRS-M No GPS data");
     }
+  //}
+}
+
+void sendLocation(){
+  unsigned char gprsEnvio;
+  // Send poweron flag the first time, otherwise send if the phone is connected.
+  if(firstGPRS) gprsEnvio = STATUS_POWERON;
+  else gprsEnvio = bikeBT;
+  
+  String http_url;
+    http_url = String(http_path) + "/p.php?u=0&p=" + String(web_passw) + "&s=" + String(gprsEnvio);
+    http_url = http_url + "&a=" + String(bikeHeigh);
+    http_url = http_url + "&la=" + String(bikeLatitude,8);
+    http_url = http_url + "&l=" + String(bikeLongitude,8);
+    DEBUG_GPRS_PRINT("Web URL: ");
+    DEBUG_GPRS_PRINTLN(http_url);
+
+  HttpClient http_client(gsm_client, http_server, http_port);
+
+  if(http_client.get(http_url) != 0){
+    DEBUG_GPRS_PRINTLN("GPRS fail get http");
+    if (bikeGPRS != STATUS_WARN) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_WARN;
+  } else {
+    DEBUG_GPRS_PRINTLN("GPRS http connected OK");
+    // Change the status on success
+    if(firstGPRS) firstGPRS = false;
+    if(bikeGPRS != STATUS_OK) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_OK;
+  }
+
+  http_client.stop();
+  DEBUG_GPRS_PRINTLN("GPRS http disconnected"); 
+}
+
+void useGPRS(){
+  if (!gsm.waitForNetwork(2000L,true)) {
+    DEBUG_GPRS_PRINTLN("GPRS Network NOT ready");
+    //DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
+    //DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());
+    //DEBUG_GPRS_PRINT("Signal Quality: "); DEBUG_GPRS_PRINTLN(gsm.getSignalQuality());
+    //DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
+    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_CRIT;
+
+  } else if (!gsm.isGprsConnected()){
+    DEBUG_GPRS_PRINTLN("GPRS Network NOT connected");
+    if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
+    bikeGPRS = STATUS_CRIT;
+    gsm.gprsConnect(gprs_apn, gprs_user, gprs_pass);
+
+  } else {
+    //Send location to server
+    if (timerGPRS < millis()){
+      sendLocation();
+      if (bikeGPRS != STATUS_OK) timerGPRS = millis() + 10000;    // On error recheck in 10 sec
+      else timerGPRS = millis() + 60000; // 1 min
+    }
+
+    //Check for Weather information
+    if (timerWeather < millis()){
+      getWeather();
+      if (bikeGPRS != STATUS_OK) timerWeather = millis() + 10000;   // On error recheck in 10 sec
+      else timerWeather = millis() + 600000;  // 10 min
+    }
+
+    //Check for Maps information
+    if (timerMaps < millis()){
+      getMaps();
+      timerMaps = millis() + 10000; // 10 sec
+    }
   }
 }
+
 
 /* getGPS()
  * Feed the GPS and get data

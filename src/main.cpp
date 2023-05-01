@@ -33,6 +33,7 @@ void setup() {
 
   #ifdef DEBUG
     Serial.begin(921600);
+    //Serial.begin(115200);
   #endif
   DEBUG_PRINTLN("Manuel Gracia.Abr-2023");
   DEBUG_PRINTLN("https://github.com/m-gracia");

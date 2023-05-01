@@ -7,12 +7,12 @@
 #define DEBUG       // General debug switch. No data sent if commented
 
 // Uncomment to enable
-#define DEBUG_GPRS
+//#define DEBUG_GPRS
 //#define DEBUG_GPS
 //#define DEBUG_GPSRAW
-#define DEBUG_BT
+//#define DEBUG_BT
 #define DEBUG_TFT
-#define DEBUG_MSG
+//#define DEBUG_MSG
 //#define DEBUG_TPMS
 
 

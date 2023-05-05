@@ -7,10 +7,12 @@ void initGPRS(){
   DEBUG_GPRS_PRINTLN("GPRS Init start");
 
   gsmDev.begin(9600,SERIAL_8N1,GPRS_PIN_RX,GPRS_PIN_TX,false); // Try at default poweron baudrate
-  if (!gsm.init()){
+  //if (!gsm.init()){
+  if (!gsm.restart()){
     DEBUG_GPRS_PRINTLN("GPRS Init fail at 9600");
     gsmDev.begin(115200,SERIAL_8N1,GPRS_PIN_RX,GPRS_PIN_TX,false);  //Try faster
-    if (!gsm.init()) DEBUG_GPRS_PRINTLN("GPRS Init fail also at 115200");
+    //if (!gsm.init()) DEBUG_GPRS_PRINTLN("GPRS Init fail also at 115200");
+    if (!gsm.restart()) DEBUG_GPRS_PRINTLN("GPRS Init fail also at 115200");
   }
   else{
     gsm.setBaud(115200);
@@ -248,7 +250,7 @@ void sendLocation(){
 }
 
 void useGPRS(){
-  if (!gsm.waitForNetwork(2000L,true)) {
+  if (!gsm.waitForNetwork(2000L,false)) {
     DEBUG_GPRS_PRINTLN("GPRS Network NOT ready");
     //DEBUG_GPRS_PRINT("SIM Status: "); DEBUG_GPRS_PRINTLN(gsm.getSimStatus());
     //DEBUG_GPRS_PRINT("MODEM Connected: "); DEBUG_GPRS_PRINTLN(gsm.isNetworkConnected());

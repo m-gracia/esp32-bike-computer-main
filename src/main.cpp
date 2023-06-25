@@ -20,38 +20,39 @@ void loopOthers (void * parameter){
       timerDisplay = millis() + 180; // Every 200ms min + time on GPS
     }
 
-    getWeb();
+    //getWeb();
   }
 }
 // -------------- //
 
 
 void setup() {
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // Disable browout detector
+  //WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); // Disable browout detector
   //rtc_wdt_protect_off(); // Disable watchdog
   //rtc_wdt_disable();
   //disableCore1WDT();
   //disableCore0WDT();
 
+  pixel.begin();
+  pixel.setBrightness(64);
+  for(int i=0;i<10; i++){  // Wait until the current is stabilized 0,5s each loop
+    pixel.clear(); pixel.show();
+    delay(250);
+    pixel.fill(0xFF0000); pixel.show(); // Red    
+    delay(250);    
+  }
+
   #ifdef DEBUG
     //Serial.begin(921600); 
     Serial.begin(115200);
   #endif
-  DEBUG_PRINTLN("Manuel Gracia.Abr-2023");
+  DEBUG_PRINTLN("Manuel Gracia.Jun-2023");
   DEBUG_PRINTLN("https://github.com/m-gracia");
-  DEBUG_PRINTLN("esp32-bike-computer_20230430");
-
-  pinMode(LED_PIN,OUTPUT);
-  for(int i=0;i<10; i++){  // Wait until the current is stabilized
-    if (digitalRead(LED_PIN)) digitalWrite(LED_PIN,LOW);
-    else digitalWrite(LED_PIN,HIGH);
-    delay(200);
-  }
-  digitalWrite(LED_PIN,HIGH);
+  DEBUG_PRINTLN("esp32-bike-computer_20230625");
 
   // Init Setup
   initDisplay();
-  initWeb();
+  //initWeb();
   initGPRS();
   initBT();
   initTPMS();
@@ -65,26 +66,29 @@ void setup() {
       &T_loopOthers,  // Task handle.
       0); // Core where the task should run
       
+  pixel.clear(); pixel.show();
   DEBUG_PRINTLN("Setup end");
-  digitalWrite(LED_PIN,LOW);
 }
 
 void loop() {
   if ((timerGPRS < millis() || timerWeather < millis() || timerMaps < millis()) 
     && bikeGPRS != STATUS_UNK){
+      pixel.fill(0x00FF00); pixel.show(); // Green
       useGPRS();
+      pixel.clear(); pixel.show();
   }
 
   if (timerTPMS < millis()){
+    pixel.fill(0x0000FF);  pixel.show(); // Blue
     getTPMS();
     timerTPMS = millis() + (BTSCANTIME * 1000) + 200; // 5 sec
+    pixel.clear(); pixel.show();
   }
 
   if (timerGPS < millis() && bikeGPS != STATUS_UNK){
+    pixel.fill(0xB200FF);  pixel.show(); // Purple
     getGPS(); // Every time
     timerGPS = millis() + 1000;  // 1s
-    
-    if (digitalRead(LED_PIN)) digitalWrite(LED_PIN,LOW);
-    else digitalWrite(LED_PIN,HIGH);
+    pixel.clear(); pixel.show();
   }
 }

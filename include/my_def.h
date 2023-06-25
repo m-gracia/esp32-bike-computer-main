@@ -2,7 +2,6 @@
 #define _MY_DEF_H_
 #include <Arduino.h>
 #include "secrets.h" // To store secret information used here. You must create first. Look on https://github.com/m-gracia for the contents.
-#define LED_PIN 02  //Onboard led
 
 // Bluetooth
 // https://specificationrefs.bluetooth.com/assigned-values/Appearance%20Values.pdf
@@ -40,8 +39,10 @@ extern int bikeTPMSRTemp;   // TPMS Rear Temperature data
 extern int bikeTPMSRBatt;   // TPMS Rear Battery data
 
 // LCD
-#define DF_GFX_SCK 18   // SCL PIN
-#define DF_GFX_MOSI 23  // SDA PIN
+//#define DF_GFX_SCK 18   // SCL PIN ESP32
+//#define DF_GFX_MOSI 23  // SDA PIN ESP32
+#define DF_GFX_SCK 12   // SCL PIN ESP32-S3
+#define DF_GFX_MOSI 11  // SDA PIN ESP32-S3
 #define DF_GFX_MISO GFX_NOT_DEFINED // Not used on this LCD's
 #include <SPI.h>
 #include <U8g2lib.h> //v2.32.15 https://github.com/olikraus/u8g2
@@ -49,12 +50,12 @@ extern int bikeTPMSRBatt;   // TPMS Rear Battery data
 #include <SPIFFS.h>
 #include <Arduino_GFX_Library.h>    //v1.2.3 https://github.com/moononournation/Arduino_GFX
 #include "BmpClass.h"
-static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(21 /* DC */, 22 /* CS */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */);
+//static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(21 /* DC */, 22 /* CS */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */); //ESP32
+static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(35 /* DC */, 36 /* CS */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */); //ESP32-S3
 static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, GFX_NOT_DEFINED /* RST */, 0 /* rotation */, true /*IPS*/);
-//static Arduino_GFX *tftR = new Arduino_ILI9341(bus1, GFX_NOT_DEFINED /* RST */, 2 /* rotation */);
-static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(21 /* DC */, 17 /* CS 26 default */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */);
+//static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(21 /* DC */, 17 /* CS 26 default */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */); // ESP32
+static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(35 /* DC */, 18 /* CS 26 default */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */); // ESP32-S3
 static Arduino_GFX *tftS = new Arduino_ST7789(bus2, GFX_NOT_DEFINED /* RST */, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 );
-//static Arduino_GFX *tftS = new Arduino_ILI9341(bus2, GFX_NOT_DEFINED /* RST */, 2 /* rotation */);
 
 #define FONT_SIGNAL u8g2_font_fub30_tn 
 #define FONT_BIG u8g2_font_logisoso92_tn
@@ -81,8 +82,11 @@ static Timezone CE(CEST, CET);
 #define TINY_GSM_MODEM_SIM808
 // Increase RX buffer if needed:
 //#define TINY_GSM_RX_BUFFER 512
-#define GPRS_PIN_TX 33          // <- Connected to RX pin on SIM808
-#define GPRS_PIN_RX 26          // <- Connected to TX pin on SIM808
+//#define GPRS_PIN_TX 33          // <- Connected to RX pin on SIM808 ESP32
+//#define GPRS_PIN_RX 26          // <- Connected to TX pin on SIM808 ESP32
+#define GPRS_PIN_TX 4           // <- Connected to RX pin on SIM808 ESP32-S3
+#define GPRS_PIN_RX 2           // <- Connected to TX pin on SIM808 ESP32-S3
+
 #include <TinyGsmClient.h>      // https://github.com/vshymanskyy/TinyGSM
 #include <ArduinoHttpClient.h>  // https://github.com/arduino-libraries/ArduinoHttpClient
 static const char http_server[] = HTTP_SERVER; // Defined in secrets.h
@@ -140,6 +144,11 @@ static const char wifi_passwd[] = WIFI_PASS;  // Defined in secrets.h
 static const char ota_passwd[] = OTA_PASS;    // Defined in secrets.h
 static WebServer webSrv(80);
 //static HTTPUpdateServer updateWebServer;
+
+// NeoPixel
+#include <Adafruit_NeoPixel.h>
+#define PIXEL_PIN 47
+static Adafruit_NeoPixel pixel(1 /*NUM PIXELS*/, PIXEL_PIN, NEO_RGB + NEO_KHZ800);
 
 //Status IDs
 #define STATUS_UNK 8        // Unknown

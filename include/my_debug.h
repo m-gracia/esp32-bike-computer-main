@@ -54,6 +54,7 @@
     #define DEBUG_BT_PRINT(x)
     #define DEBUG_BT_PRINTLN(x)
     #endif
+    
     #ifdef DEBUG_TFT
     #define DEBUG_TFT_PRINT(x)  Serial.print(x)
     #define DEBUG_TFT_PRINTLN(x)  Serial.println(x)

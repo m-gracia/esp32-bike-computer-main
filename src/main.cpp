@@ -3,7 +3,9 @@
 #include "my_debug.h"
 #include "bluetooth.h"
 #include "lcd.h"
+#include "gps.h"
 #include "gprs.h"
+//#include "httpsrv.h"
 #include "tpms.h"
 #include "soc/soc.h"
 #include "soc/rtc_cntl_reg.h"
@@ -13,13 +15,14 @@
 // TASK ON CORE 0 //
 void loopOthers (void * parameter){
   for(;;) {
-    delay(20); // For WDog feeding
+    delay(20);    // For WDog feeding
 
     if(timerDisplay < millis()){
       sendDisplay();
       timerDisplay = millis() + 180; // Every 200ms min + time on GPS
     }
 
+    feedGPS();    // Everytime
     //getWeb();
   }
 }
@@ -46,16 +49,17 @@ void setup() {
     //Serial.begin(921600); 
     Serial.begin(115200);
   #endif
-  DEBUG_PRINTLN("Manuel Gracia.Jun-2023");
+  DEBUG_PRINTLN("Manuel Gracia.Jun-2024");
   DEBUG_PRINTLN("https://github.com/m-gracia");
-  DEBUG_PRINTLN("esp32-bike-computer_20230625");
+  DEBUG_PRINTLN("esp32-bike-computer_20240313");
 
   // Init Setup
   initDisplay();
-  //initWeb();
-  initGPRS();
+  initGPS();
   initBT();
   initTPMS();
+  initWifi();
+  //initWeb();
 
   xTaskCreatePinnedToCore(
       loopOthers, // Function to implement the task

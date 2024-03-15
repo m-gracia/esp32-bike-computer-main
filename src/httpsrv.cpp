@@ -18,11 +18,11 @@ String webProcessor(const String& var){
 
 void initWeb(){
     // Turn on wifi AP. Default IP: 192.168.4.1
-    WiFi.mode(WIFI_AP);
-    WiFi.softAP(wifi_ssid,wifi_passwd);
-    DEBUG_WEB_PRINTLN("WEB AP online");
-    DEBUG_WEB_PRINT("WEB IP address: ");
-    DEBUG_WEB_PRINTLN(WiFi.softAPIP());
+    //WiFi.mode(WIFI_AP);
+    //WiFi.softAP(wifi_ssid,wifi_passwd);
+    //DEBUG_WEB_PRINTLN("WEB AP online");
+    //DEBUG_WEB_PRINT("WEB IP address: ");
+    //DEBUG_WEB_PRINTLN(WiFi.softAPIP());
 
     // Route for root / web page
     webSrv.on("/", HTTP_GET, []() {
@@ -82,6 +82,7 @@ void initWeb(){
     webSrv.begin();
     DEBUG_WEB_PRINTLN("WEB Server online");
 }
+
 
 void getWeb(){
     webSrv.handleClient();

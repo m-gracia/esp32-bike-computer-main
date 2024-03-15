@@ -113,13 +113,14 @@ Otherwise:
      ```
     #define HTTP_SERVER "my.server.com"
     #define HTTP_PATH "/bikefiles"   // Should begin with "/" and end without it
-    #define GPRS_APN "yourPhoneOperatorAPN"
-    #define GPRS_USER ""
-    #define GPRS_PASS ""
     #define WEATHER_APIKEY "yourOpenweathermapsAPIKey"
     #define WEATHER_CITYID "3104324"    // Zaragoza,ES Look for your location: https://www.openweathermap.org/find
     #define MAPS_APIKEY "yourBingMapsAPIKey"
     #define WEB_PASS "user_id0_pass_set_on_the_database"
+    #define WIFI_SSID01 "SSID01_NAME"
+    #define WIFI_PASS01 "SSID01_PASSWORD"
+    #define WIFI_SSID02 "SSID02_NAME"
+    #define WIFI_PASS02 "SSID02_PASSWORD"
      ```
      - Compile and upload it to the ESP32. 
      - Upload the "data" folder files to ESP32 SPIFFS.

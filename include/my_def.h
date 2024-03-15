@@ -79,28 +79,29 @@ static TimeChangeRule CEST = {"CEST", Last, Sun, Mar, 2, 120};     // Central Eu
 static TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};       // Central European Standard Time
 static Timezone CE(CEST, CET);
 
-// GPRS + GPS
-// Select your modem:
-#define TINY_GSM_MODEM_SIM808
-// Increase RX buffer if needed:
-//#define TINY_GSM_RX_BUFFER 512
-//#define GPRS_PIN_TX 33          // <- Connected to RX pin on SIM808 ESP32
-//#define GPRS_PIN_RX 26          // <- Connected to TX pin on SIM808 ESP32
-#define GPRS_PIN_TX 4           // <- Connected to RX pin on SIM808 ESP32-S3
-#define GPRS_PIN_RX 2           // <- Connected to TX pin on SIM808 ESP32-S3
+// GPS
+//#define GPS_PIN_TX 33        // <- Connected to RX pin on SIM808 ESP32
+//#define GPS_PIN_RX 26        // <- Connected to TX pin on SIM808 ESP32
+#define GPS_PIN_TX 4           // <- Connected to RX pin on SIM808 ESP32-S3
+#define GPS_PIN_RX 2           // <- Connected to TX pin on SIM808 ESP32-S3
+#define gps_dev Serial2        // Hardware UART
+#define GPS_UART_SPEED 115200  // UART Speed
+#include <TinyGPSPlus.h>       // https://github.com/mikalhart/TinyGPSPlus
+static TinyGPSPlus gps;
 
-#include <TinyGsmClient.h>      // https://github.com/vshymanskyy/TinyGSM
+// Wifi
+#include <WiFi.h>
+#include <WiFiMulti.h>
 #include <ArduinoHttpClient.h>  // https://github.com/arduino-libraries/ArduinoHttpClient
-static const char http_server[] = HTTP_SERVER; // Defined in secrets.h
-static const char http_path[] = HTTP_PATH;     // Defined in secrets.h
+static WiFiMulti wifi_dev;
+static const char wifi_ssid01[] = WIFI_SSID01;      // Defined in secrets.h
+static const char wifi_passwd01[] = WIFI_PASS01;    // Defined in secrets.h
+static const char wifi_ssid02[] = WIFI_SSID02;      // Defined in secrets.h
+static const char wifi_passwd02[] = WIFI_PASS02;    // Defined in secrets.h
+static const char http_server[] = HTTP_SERVER;      // Defined in secrets.h
+static const char http_path[] = HTTP_PATH;          // Defined in secrets.h
 static const int http_port = 80;
-static const char web_passw[] = WEB_PASS;      // Defined in secrets.h
-static const char gprs_apn[]= GPRS_APN;        // Defined in secrets.h
-static const char gprs_user[] = GPRS_USER;     // Defined in secrets.h
-static const char gprs_pass[] = GPRS_PASS;     // Defined in secrets.h
-static HardwareSerial gsmDev(1);
-static TinyGsm gsm(gsmDev);
-static TinyGsmClient gsm_client(gsm);
+static const char web_passw[] = WEB_PASS;           // Defined in secrets.h
 extern int bikeHeigh;                // GPS Heigh
 extern int bikeSpeed;                // GPS Speed
 extern unsigned char bikeHour;       // GPS hour
@@ -136,15 +137,14 @@ extern int mapsSpeed;                       // Speed limit
 extern bool mapsSpeedAlert;                 // Speed limit exceded
 
 // Webserver
-#include <WiFi.h>
 #include <WebServer.h>
 //#include <HTTPUpdateServer.h>
 //#include <AsyncTCP.h>
 //#include <ESPAsyncWebServer.h>
-static const char wifi_ssid[] = "JARVIS";
-static const char wifi_passwd[] = WIFI_PASS;  // Defined in secrets.h
-static const char ota_passwd[] = OTA_PASS;    // Defined in secrets.h
-static WebServer webSrv(80);
+// static const char wifi_ssid[] = "JARVIS";
+// static const char wifi_passwd[] = WIFI_PASS;  // Defined in secrets.h
+// static const char ota_passwd[] = OTA_PASS;    // Defined in secrets.h
+ static WebServer webSrv(80);
 //static HTTPUpdateServer updateWebServer;
 
 // NeoPixel

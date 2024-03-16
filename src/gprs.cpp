@@ -19,7 +19,7 @@ void getWeather(){
   String http_url;
 
   // Without GPS data failback to default city
-  if (bikeGPS == STATUS_OK || bikeGPS == STATUS_WARN) http_url = "/data/2.5/forecast?lat="+String(bikeLatitude,4)+"&lon="+String(bikeLongitude,4)+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
+  if (bikeGPS == STATUS_OK /*|| bikeGPS == STATUS_WARN*/) http_url = "/data/2.5/forecast?lat="+String(bikeLatitude,4)+"&lon="+String(bikeLongitude,4)+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
   else http_url = "/data/2.5/forecast?id="+weather_cityId+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
   DEBUG_GPRS_PRINT("Weather URL: ");
   DEBUG_GPRS_PRINTLN(http_url);
@@ -38,23 +38,31 @@ void getWeather(){
     String result = weather_client.responseBody();
     DEBUG_GPRS_PRINTLN("GPRS-W Readed:");
     DEBUG_GPRS_PRINTLN(result);
-    result.replace('[', ' ');
-    result.replace(']', ' ');
+    //result.replace('[', ' ');
+    //result.replace(']', ' ');
     
-    char jsonArray [result.length()+1];
-    result.toCharArray(jsonArray,sizeof(jsonArray));
-    jsonArray[result.length() + 1] = '\0';
+    //char jsonArray [result.length()+1];
+    //result.toCharArray(jsonArray,sizeof(jsonArray));
+    //jsonArray[result.length() + 1] = '\0';
     
-    StaticJsonBuffer<1024> json_buf;
-    JsonObject &root = json_buf.parseObject(jsonArray);
-    if (!root.success()) { 
+    //StaticJsonBuffer<1024> json_buf;
+    //JsonObject &root = json_buf.parseObject(jsonArray);
+    JsonDocument root;
+    if (deserializeJson(root, result)) { 
       DEBUG_GPRS_PRINTLN("parseObject() failed");
       return;
     }
 
-    weatherLocation = (const char*)root["city"]["name"];
-    String idString = (const char*)root["list"]["weather"]["id"];
-    weatherIcon = idString.toInt();
+    weatherLocation = root["city"]["name"].as<String>();
+    weatherIcon = root["list"][0]["weather"][0]["id"].as<int>();
+    //weatherTemperature = root["list"][0]["main"]["temp"].as<const char*>();
+    //weatherWeather = root["list"][0]["weather"][0]["main"].as<const char*>();
+    //weatherDescription = root["list"][0]["weather"][0]["description"].as<const char*>();
+    //weatherWind = root["list"][0]["wind"]["speed"].as<float>();
+
+    //weatherLocation = (const char*)root["city"]["name"];
+    //String idString = (const char*)root["list"]["weather"]["id"];
+    //weatherIcon = idString.toInt();
     //weatherTemperature = (const char*)root["list"]["main"]["temp"];
     //weatherWeather = (const char*)root["list"]["weather"]["main"];
     //weatherDescription = (const char*)root["list"]["weather"]["description"];
@@ -92,23 +100,26 @@ void getMaps(){
       String result = maps_client.responseBody();
       DEBUG_GPRS_PRINTLN("GPRS-M Readed:");
       DEBUG_GPRS_PRINTLN(result);
-      result.replace('[', ' ');
-      result.replace(']', ' ');
+      // result.replace('[', ' ');
+      // result.replace(']', ' ');
       
-      char jsonArray [result.length()+1];
-      result.toCharArray(jsonArray,sizeof(jsonArray));
-      jsonArray[result.length() + 1] = '\0';
+      // char jsonArray [result.length()+1];
+      // result.toCharArray(jsonArray,sizeof(jsonArray));
+      // jsonArray[result.length() + 1] = '\0';
       
-      StaticJsonBuffer<1536> json_buf;
-      JsonObject &root = json_buf.parseObject(jsonArray);
-      if (!root.success()) { 
+      // StaticJsonBuffer<1536> json_buf;
+      // JsonObject &root = json_buf.parseObject(jsonArray);
+      JsonDocument root;
+      if (deserializeJson(root, result)) { 
         DEBUG_GPRS_PRINTLN("parseObject() failed");
         return;
       }
 
-      String tmapsStreet = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["name"];
-      String StrSpeed = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["speedLimit"];
-      int tmapsSpeed = StrSpeed.toInt();
+      // String tmapsStreet = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["name"];
+      // String StrSpeed = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["speedLimit"];
+      // int tmapsSpeed = StrSpeed.toInt();
+      String tmapsStreet = root["resourceSets"][0]["resources"][0]["snappedPoints"][0]["name"].as<const char*>();
+      int tmapsSpeed = root["resourceSets"][0]["resources"][0]["snappedPoints"][0]["speedLimit"].as<int>();
 
       // Clean the street name
       // TODO - Use an array and a loop instead (more "elegant" way)

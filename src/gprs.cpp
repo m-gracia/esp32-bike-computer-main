@@ -38,15 +38,7 @@ void getWeather(){
     String result = weather_client.responseBody();
     DEBUG_GPRS_PRINTLN("GPRS-W Readed:");
     DEBUG_GPRS_PRINTLN(result);
-    //result.replace('[', ' ');
-    //result.replace(']', ' ');
-    
-    //char jsonArray [result.length()+1];
-    //result.toCharArray(jsonArray,sizeof(jsonArray));
-    //jsonArray[result.length() + 1] = '\0';
-    
-    //StaticJsonBuffer<1024> json_buf;
-    //JsonObject &root = json_buf.parseObject(jsonArray);
+
     JsonDocument root;
     if (deserializeJson(root, result)) { 
       DEBUG_GPRS_PRINTLN("parseObject() failed");
@@ -59,15 +51,6 @@ void getWeather(){
     //weatherWeather = root["list"][0]["weather"][0]["main"].as<const char*>();
     //weatherDescription = root["list"][0]["weather"][0]["description"].as<const char*>();
     //weatherWind = root["list"][0]["wind"]["speed"].as<float>();
-
-    //weatherLocation = (const char*)root["city"]["name"];
-    //String idString = (const char*)root["list"]["weather"]["id"];
-    //weatherIcon = idString.toInt();
-    //weatherTemperature = (const char*)root["list"]["main"]["temp"];
-    //weatherWeather = (const char*)root["list"]["weather"]["main"];
-    //weatherDescription = (const char*)root["list"]["weather"]["description"];
-    //String windspeed = (const char*)root["list"]["wind"]["speed"];
-    //weatherWind = windspeed.toFloat();
 
     DEBUG_GPRS_PRINT("GPRS-W Icon:");
     DEBUG_GPRS_PRINTLN(weatherIcon);
@@ -100,24 +83,13 @@ void getMaps(){
       String result = maps_client.responseBody();
       DEBUG_GPRS_PRINTLN("GPRS-M Readed:");
       DEBUG_GPRS_PRINTLN(result);
-      // result.replace('[', ' ');
-      // result.replace(']', ' ');
-      
-      // char jsonArray [result.length()+1];
-      // result.toCharArray(jsonArray,sizeof(jsonArray));
-      // jsonArray[result.length() + 1] = '\0';
-      
-      // StaticJsonBuffer<1536> json_buf;
-      // JsonObject &root = json_buf.parseObject(jsonArray);
+
       JsonDocument root;
       if (deserializeJson(root, result)) { 
         DEBUG_GPRS_PRINTLN("parseObject() failed");
         return;
       }
 
-      // String tmapsStreet = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["name"];
-      // String StrSpeed = (const char*)root["resourceSets"]["resources"]["snappedPoints"]["speedLimit"];
-      // int tmapsSpeed = StrSpeed.toInt();
       String tmapsStreet = root["resourceSets"][0]["resources"][0]["snappedPoints"][0]["name"].as<const char*>();
       int tmapsSpeed = root["resourceSets"][0]["resources"][0]["snappedPoints"][0]["speedLimit"].as<int>();
 

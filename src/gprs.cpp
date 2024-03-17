@@ -194,8 +194,10 @@ void useGPRS(){
   if (wifi_status != WL_CONNECTED) {
     DEBUG_GPRS_PRINTLN("WIFI Network NOT ready");
     DEBUG_GPRS_PRINT("WIFI Status: "); DEBUG_GPRS_PRINTLN(wifi_status);
+    if (wifi_status = WL_NO_SSID_AVAIL) WiFi.disconnect(); // To fix a bug on reconnection
     if (bikeGPRS != STATUS_CRIT) bitSet(bikeDataChanged,2);
     bikeGPRS = STATUS_CRIT;
+    timerGPRS = millis() + 10000;    // Recheck in 10 sec
     
   } else {
     //Send location to server

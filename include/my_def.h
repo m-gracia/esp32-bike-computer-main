@@ -85,7 +85,7 @@ static Timezone CE(CEST, CET);
 #define GPS_PIN_TX 4           // <- Connected to RX pin on SIM808 ESP32-S3
 #define GPS_PIN_RX 2           // <- Connected to TX pin on SIM808 ESP32-S3
 #define gps_dev Serial2        // Hardware UART
-#define GPS_UART_SPEED 115200  // UART Speed
+#define GPS_UART_SPEED 9600    // UART Speed
 #include <TinyGPSPlus.h>       // https://github.com/mikalhart/TinyGPSPlus
 static TinyGPSPlus gps;
 

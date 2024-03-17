@@ -49,9 +49,9 @@ void setup() {
     //Serial.begin(921600); 
     Serial.begin(115200);
   #endif
-  DEBUG_PRINTLN("Manuel Gracia.Jun-2024");
+  DEBUG_PRINTLN("Manuel Gracia.Mar-2024");
   DEBUG_PRINTLN("https://github.com/m-gracia");
-  DEBUG_PRINTLN("esp32-bike-computer_20240313");
+  DEBUG_PRINTLN("esp32-bike-computer_20240317");
 
   // Init Setup
   initDisplay();

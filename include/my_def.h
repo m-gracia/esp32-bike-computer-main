@@ -171,7 +171,7 @@ extern unsigned char bikeCPU;        // Back CPU Status
  *
  * The bits are set when a new information needs to be updated on the LCD's
  * 1 - GPS Speed (Not used here)
- * 2 - GPRS Status (Not used here)
+ * 2 - GPRS Status
  * 3 - TPMS Front
  * 4 - TPMS Rear
  * 5 - GPS Heigh

@@ -182,6 +182,10 @@ Many thanks to the programmers that works and maintain the libraries used on thi
 - <https://github.com/vshymanskyy/TinyGSM>
 - <https://github.com/bblanchon/ArduinoJson>
 
+And thank you VANEP and UniquePete for your Fritzing desigs: 
+- <https://forum.fritzing.org/u/vanepp/summary>
+- <https://forum.fritzing.org/u/UniquePete/summary>
+
 
 ## Disclaimer
 

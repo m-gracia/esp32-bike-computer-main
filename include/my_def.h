@@ -39,25 +39,32 @@ extern int bikeTPMSRTemp;   // TPMS Rear Temperature data
 extern int bikeTPMSRBatt;   // TPMS Rear Battery data
 
 // LCD
-//#define TFT_GFX_SCK 18   // SCL PIN ESP32
-//#define TFT_GFX_MOSI 23  // SDA PIN ESP32
-#define TFT_GFX_SCK 12   // SCL PIN ESP32-S3
-#define TFT_GFX_MOSI 11  // SDA PIN ESP32-S3
+// #define TFT_GFX_SCK 12   // SCL PIN ESP32-S3_v0
+// #define TFT_GFX_MOSI 11  // SDA PIN ESP32-S3_v0
+// #define TFT_GFX_MISO GFX_NOT_DEFINED // Not used on this LCD's
+// #define TFT_GFX_RESET  GFX_NOT_DEFINED //2   // Just testing
+#define TFT_GFX_SCK 12   // SCL PIN ESP32-S3_v1
+#define TFT_GFX_MOSI 11  // SDA PIN ESP32-S3_v1
 #define TFT_GFX_MISO GFX_NOT_DEFINED // Not used on this LCD's
-#define TFT_GFX_RESET  GFX_NOT_DEFINED //2   // Just testing
+#define TFT_GFX_RESET 36 // ESP32-S3_v1
+
+
 #include <SPI.h>
 #include <U8g2lib.h> //v2.32.15 https://github.com/olikraus/u8g2
 #include <FS.h>
 #include <SPIFFS.h>
 #include <Arduino_GFX_Library.h>    //v1.2.3 https://github.com/moononournation/Arduino_GFX
 #include "BmpClass.h"
-//static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(21 /* DC */, 22 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32
-static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(35 /* DC */, 36 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32-S3
-//static Arduino_DataBus *bus1 = new Arduino_SWSPI(35 /* DC */, 36 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO); //ESP32-S3
-static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, TFT_GFX_RESET, 0 /* rotation */, true /*IPS*/);
-//static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(21 /* DC */, 17 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32
-static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(35 /* DC */, 18 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32-S3
-static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 );
+// static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(35 /* DC */, 36 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32-S3_v0
+// static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, TFT_GFX_RESET, 0 /* rotation */, true /*IPS*/); // ESP32-S3_v0
+// static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(35 /* DC */, 18 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32-S3_v0
+// static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 ); // ESP32-S3_v0
+
+static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(18 /* DC */, 35 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32-S3_v1
+static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, TFT_GFX_RESET, 0 /* rotation */, true /*IPS*/); // ESP32-S3_v1
+static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(18 /* DC */, 10 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32-S3_v1
+static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 ); // ESP32-S3_v1
+
 
 #define FONT_SIGNAL u8g2_font_fub30_tn 
 #define FONT_BIG u8g2_font_logisoso92_tn
@@ -80,10 +87,8 @@ static TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};       // Central Eu
 static Timezone CE(CEST, CET);
 
 // GPS
-//#define GPS_PIN_TX 33        // <- Connected to RX pin on SIM808 ESP32
-//#define GPS_PIN_RX 26        // <- Connected to TX pin on SIM808 ESP32
-#define GPS_PIN_TX 4           // <- Connected to RX pin on SIM808 ESP32-S3
-#define GPS_PIN_RX 2           // <- Connected to TX pin on SIM808 ESP32-S3
+#define GPS_PIN_TX 4           // <- Connected to TX pin on NEO6M ESP32-S3
+#define GPS_PIN_RX 2           // <- Connected to RX pin on NEO6M ESP32-S3
 #define gps_dev Serial2        // Hardware UART
 #define GPS_UART_SPEED 9600    // UART Speed
 #include <TinyGPSPlus.h>       // https://github.com/mikalhart/TinyGPSPlus

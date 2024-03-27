@@ -131,7 +131,7 @@ Otherwise:
 
 
 ## Schemes and connections
-There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes](schemes) folder. There are created for soldering on a quick breadboard. I have glue a small square of plastic sponge to support the SIM808 module.
+There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes](schemes) folder. They are designed for soldering on a quick breadboard. I have glue a small square of plastic sponge to support the SIM808 module.
 
 ![Breadboard Scheme](docs/images/breadboardScheme.jpg)
 

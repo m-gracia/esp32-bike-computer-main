@@ -24,8 +24,8 @@ extern int bikePhoneBattery;       // Phone battery
 #define BTSCANTIME 5
 #include <BLEScan.h>
 static BLEAddress *pServerAddress;
-static String TPMS_knownAddresses[] = { "81:ea:ca:22:23:03" , "83:ea:ca:42:25:0c"};  // TPMS sensors MAC: Front , Rear
-static unsigned char tpmsBatteyLow = 5;  // Battery low level
+static String TPMS_knownAddresses[] = { TPMSMAC_FRONT , TPMSMAC_REAR};  // TPMS sensors MAC: Front , Rear
+static unsigned char tpmsBatteyLow = 5;  // TPMS Battery low level
 static unsigned char tpmsLevel4 = 35;    // TPMS Pressure very high level
 static unsigned char tpmsLevel3 = 32;    // TPMS Pressure high level
 static unsigned char tpmsLevel2 = 23;    // TPMS Pressure low level

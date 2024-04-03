@@ -61,7 +61,7 @@ extern int bikeTPMSRBatt;   // TPMS Rear Battery data
 // static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 ); // ESP32-S3_v0
 
 static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(18 /* DC */, 35 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32-S3_v1
-static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, TFT_GFX_RESET, 0 /* rotation */, true /*IPS*/); // ESP32-S3_v1
+static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, GFX_NOT_DEFINED, 0 /* rotation */, true /*IPS*/); // ESP32-S3_v1
 static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(18 /* DC */, 10 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32-S3_v1
 static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 ); // ESP32-S3_v1
 

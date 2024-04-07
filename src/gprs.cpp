@@ -11,7 +11,6 @@ void initWifi(){
 
   bikeGPRS = STATUS_CRIT; // Initialized but without data
   DEBUG_GPRS_PRINTLN("Wifi Init end");
-  //DEBUG_GPRS_PRINT("Local IP: "); DEBUG_GPRS_PRINTLN(gsm.getLocalIP());
 }
 
 void getWeather(){
@@ -22,7 +21,7 @@ void getWeather(){
   if (bikeGPS == STATUS_OK /*|| bikeGPS == STATUS_WARN*/) http_url = "/data/2.5/forecast?lat="+String(bikeLatitude,4)+"&lon="+String(bikeLongitude,4)+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
   else http_url = "/data/2.5/forecast?id="+weather_cityId+"&units=metric&lang=es&cnt=1&appid="+weather_apikey;
   DEBUG_GPRS_PRINT("Weather URL: ");
-  DEBUG_GPRS_PRINTLN(http_url);
+  DEBUG_WEB_SECRETPRINTLN(http_url);
 
   HttpClient weather_client(wifi_client, weather_server, weather_port);
   
@@ -67,7 +66,7 @@ void getMaps(){
     String http_url;
     http_url = "/REST/v1/Routes/SnapToRoad?pts="+String(bikeLatitude,4)+","+String(bikeLongitude,4)+"&intpl=false&spdl=true&spu=KPH&key="+maps_apikey;
     DEBUG_GPRS_PRINT("Maps URL: ");
-    DEBUG_GPRS_PRINTLN(http_url);
+    DEBUG_WEB_SECRETPRINTLN(http_url);
 
     HttpClient maps_client(wifi_client, maps_server, maps_port);
 
@@ -165,7 +164,7 @@ void sendLocation(){
     http_url = http_url + "&la=" + String(bikeLatitude,8);
     http_url = http_url + "&l=" + String(bikeLongitude,8);
     DEBUG_GPRS_PRINT("Web URL: ");
-    DEBUG_GPRS_PRINTLN(http_url);
+    DEBUG_WEB_SECRETPRINTLN(http_url);
 
   HttpClient http_client(wifi_client, http_server, http_port);
 

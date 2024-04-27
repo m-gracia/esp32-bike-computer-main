@@ -2,7 +2,6 @@
 #define _MY_DEF_H_
 #include <Arduino.h>
 #include "secrets.h" // To store secret information used here. You must create first. Look on https://github.com/m-gracia for the contents.
-#define LED_PIN 02  //Onboard led
 
 // Bluetooth
 // https://specificationrefs.bluetooth.com/assigned-values/Appearance%20Values.pdf
@@ -25,8 +24,8 @@ extern int bikePhoneBattery;       // Phone battery
 #define BTSCANTIME 5
 #include <BLEScan.h>
 static BLEAddress *pServerAddress;
-static String TPMS_knownAddresses[] = { "81:ea:ca:22:23:03" , "83:ea:ca:42:25:0c"};  // TPMS sensors MAC: Front , Rear
-static unsigned char tpmsBatteyLow = 5;  // Battery low level
+static String TPMS_knownAddresses[] = { TPMSMAC_FRONT , TPMSMAC_REAR};  // TPMS sensors MAC: Front , Rear
+static unsigned char tpmsBatteyLow = 5;  // TPMS Battery low level
 static unsigned char tpmsLevel4 = 35;    // TPMS Pressure very high level
 static unsigned char tpmsLevel3 = 32;    // TPMS Pressure high level
 static unsigned char tpmsLevel2 = 23;    // TPMS Pressure low level
@@ -40,21 +39,32 @@ extern int bikeTPMSRTemp;   // TPMS Rear Temperature data
 extern int bikeTPMSRBatt;   // TPMS Rear Battery data
 
 // LCD
-#define DF_GFX_SCK 18   // SCL PIN
-#define DF_GFX_MOSI 23  // SDA PIN
-#define DF_GFX_MISO GFX_NOT_DEFINED // Not used on this LCD's
+// #define TFT_GFX_SCK 12   // SCL PIN ESP32-S3_v0
+// #define TFT_GFX_MOSI 11  // SDA PIN ESP32-S3_v0
+// #define TFT_GFX_MISO GFX_NOT_DEFINED // Not used on this LCD's
+// #define TFT_GFX_RESET  GFX_NOT_DEFINED //2   // Just testing
+#define TFT_GFX_SCK 12   // SCL PIN ESP32-S3_v1
+#define TFT_GFX_MOSI 11  // SDA PIN ESP32-S3_v1
+#define TFT_GFX_MISO GFX_NOT_DEFINED // Not used on this LCD's
+#define TFT_GFX_RESET 36 // ESP32-S3_v1
+
+
 #include <SPI.h>
 #include <U8g2lib.h> //v2.32.15 https://github.com/olikraus/u8g2
 #include <FS.h>
 #include <SPIFFS.h>
 #include <Arduino_GFX_Library.h>    //v1.2.3 https://github.com/moononournation/Arduino_GFX
 #include "BmpClass.h"
-static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(21 /* DC */, 22 /* CS */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */);
-static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, GFX_NOT_DEFINED /* RST */, 0 /* rotation */, true /*IPS*/);
-//static Arduino_GFX *tftR = new Arduino_ILI9341(bus1, GFX_NOT_DEFINED /* RST */, 2 /* rotation */);
-static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(21 /* DC */, 17 /* CS 26 default */, DF_GFX_SCK, DF_GFX_MOSI, DF_GFX_MISO, HSPI /* spi_num */);
-static Arduino_GFX *tftS = new Arduino_ST7789(bus2, GFX_NOT_DEFINED /* RST */, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 );
-//static Arduino_GFX *tftS = new Arduino_ILI9341(bus2, GFX_NOT_DEFINED /* RST */, 2 /* rotation */);
+// static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(35 /* DC */, 36 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32-S3_v0
+// static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, TFT_GFX_RESET, 0 /* rotation */, true /*IPS*/); // ESP32-S3_v0
+// static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(35 /* DC */, 18 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32-S3_v0
+// static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 ); // ESP32-S3_v0
+
+static Arduino_DataBus *bus1 = new Arduino_ESP32SPI(18 /* DC */, 35 /* CS */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); //ESP32-S3_v1
+static Arduino_GFX *tftR = new Arduino_GC9A01(bus1, GFX_NOT_DEFINED, 0 /* rotation */, true /*IPS*/); // ESP32-S3_v1
+static Arduino_DataBus *bus2 = new Arduino_ESP32SPI(18 /* DC */, 10 /* CS 26 default */, TFT_GFX_SCK, TFT_GFX_MOSI, TFT_GFX_MISO, HSPI /* spi_num */); // ESP32-S3_v1
+static Arduino_GFX *tftS = new Arduino_ST7789(bus2, TFT_GFX_RESET, 2 /* rotation */, true /*IPS*/, 240 /* width */, 280 /* height */,0,0,0,20 ); // ESP32-S3_v1
+
 
 #define FONT_SIGNAL u8g2_font_fub30_tn 
 #define FONT_BIG u8g2_font_logisoso92_tn
@@ -76,25 +86,27 @@ static TimeChangeRule CEST = {"CEST", Last, Sun, Mar, 2, 120};     // Central Eu
 static TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};       // Central European Standard Time
 static Timezone CE(CEST, CET);
 
-// GPRS + GPS
-// Select your modem:
-#define TINY_GSM_MODEM_SIM808
-// Increase RX buffer if needed:
-//#define TINY_GSM_RX_BUFFER 512
-#define GPRS_PIN_TX 33          // <- Connected to RX pin on SIM808
-#define GPRS_PIN_RX 26          // <- Connected to TX pin on SIM808
-#include <TinyGsmClient.h>      // https://github.com/vshymanskyy/TinyGSM
+// GPS
+#define GPS_PIN_TX 4           // <- Connected to TX pin on NEO6M ESP32-S3
+#define GPS_PIN_RX 2           // <- Connected to RX pin on NEO6M ESP32-S3
+#define gps_dev Serial2        // Hardware UART
+#define GPS_UART_SPEED 9600    // UART Speed
+#include <TinyGPSPlus.h>       // https://github.com/mikalhart/TinyGPSPlus
+static TinyGPSPlus gps;
+
+// Wifi
+#include <WiFi.h>
+#include <WiFiMulti.h>
 #include <ArduinoHttpClient.h>  // https://github.com/arduino-libraries/ArduinoHttpClient
-static const char http_server[] = HTTP_SERVER; // Defined in secrets.h
-static const char http_path[] = HTTP_PATH;     // Defined in secrets.h
+static WiFiMulti wifi_dev;
+static const char wifi_ssid01[] = WIFI_SSID01;      // Defined in secrets.h
+static const char wifi_passwd01[] = WIFI_PASS01;    // Defined in secrets.h
+static const char wifi_ssid02[] = WIFI_SSID02;      // Defined in secrets.h
+static const char wifi_passwd02[] = WIFI_PASS02;    // Defined in secrets.h
+static const char http_server[] = HTTP_SERVER;      // Defined in secrets.h
+static const char http_path[] = HTTP_PATH;          // Defined in secrets.h
 static const int http_port = 80;
-static const char web_passw[] = WEB_PASS;      // Defined in secrets.h
-static const char gprs_apn[]= GPRS_APN;        // Defined in secrets.h
-static const char gprs_user[] = GPRS_USER;     // Defined in secrets.h
-static const char gprs_pass[] = GPRS_PASS;     // Defined in secrets.h
-static HardwareSerial gsmDev(1);
-static TinyGsm gsm(gsmDev);
-static TinyGsmClient gsm_client(gsm);
+static const char web_passw[] = WEB_PASS;           // Defined in secrets.h
 extern int bikeHeigh;                // GPS Heigh
 extern int bikeSpeed;                // GPS Speed
 extern unsigned char bikeHour;       // GPS hour
@@ -129,6 +141,22 @@ extern String mapsStreet;                   // Street
 extern int mapsSpeed;                       // Speed limit
 extern bool mapsSpeedAlert;                 // Speed limit exceded
 
+// Webserver
+#include <WebServer.h>
+//#include <HTTPUpdateServer.h>
+//#include <AsyncTCP.h>
+//#include <ESPAsyncWebServer.h>
+// static const char wifi_ssid[] = "JARVIS";
+// static const char wifi_passwd[] = WIFI_PASS;  // Defined in secrets.h
+// static const char ota_passwd[] = OTA_PASS;    // Defined in secrets.h
+ static WebServer webSrv(80);
+//static HTTPUpdateServer updateWebServer;
+
+// NeoPixel
+#include <Adafruit_NeoPixel.h>
+#define PIXEL_PIN 47
+static Adafruit_NeoPixel pixel(1 /*NUM PIXELS*/, PIXEL_PIN, NEO_RGB + NEO_KHZ800);
+
 //Status IDs
 #define STATUS_UNK 8        // Unknown
 #define STATUS_CRIT 2       // Critical
@@ -148,7 +176,7 @@ extern unsigned char bikeCPU;        // Back CPU Status
  *
  * The bits are set when a new information needs to be updated on the LCD's
  * 1 - GPS Speed (Not used here)
- * 2 - GPRS Status (Not used here)
+ * 2 - GPRS Status
  * 3 - TPMS Front
  * 4 - TPMS Rear
  * 5 - GPS Heigh

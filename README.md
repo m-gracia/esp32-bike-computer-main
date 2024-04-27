@@ -46,15 +46,15 @@ Some features have been removed from this version because there are not longer n
 
 ## Part list
 
-- **ESP32 Mini D1**<br>
-    It could work with other ESP32 boards but I have chose this for the small size. Be sure to choose one with two cores p.e. WROOM-32.
+- **Wemos ESP32-S3 mini**<br>
+    It could work with other ESP32 boards but I have chose this for the small size. Be sure to choose one with two cores, don't use a ESP32-C3 or ESP32-S2. I have use ESP32 mini D1 boards on other proyects, but the power IC included on some cheap boards doesn't provide enought power to keep wifi and bluetooth at the same time.
     
-    ![ESP32 Mini D1](docs/images/esp32.jpg)
+    ![ESP32-S3 mini](docs/images/esp32S3mini.jpg)
 
-- **GPRS + GSM board SIM808**<br>
-    Don't forget to choose two apropiate antennas for GPS and GSM radios.
+- **GPS board Neo6M**<br>
+    Don't forget to choose an apropiate antenna. It should work too with other smaller board like ATGM336H.
 
-    ![SIM808](docs/images/sim808.jpg)
+    ![Neo6M](docs/images/gpsNeo6m.jpg)
 
 - **SPI TFT**<br>
     One round 240x240 1,28" based on GC9A01 chip, and other square 240x280 1,69" based on ST7789 chip. These are cheap, fits on the case and they can be seen pretty clear under the sun light.
@@ -73,13 +73,16 @@ Some features have been removed from this version because there are not longer n
     
     ![BLE4 TPMS](docs/images/tpms.jpg)
 
+- **4G Wifi USB dongle**<br>
+    USB Wifi - 4G router configured to create a hotspot for Internet connection. Must be connected to a USB connection on the bike.
+
+    ![USB 4G wifi router](docs/images/USB4GWifiDongle.jpg)
+
 - **Other stuff**
     - 2 * 8 pin 5cm dupond cables for LCDs.
-    - A waterproof case for the ESP32 and SIM808.
-    - 3x7cm PCB prototype breadboard.
-    - Male and Female pin headers.
-    - Black USB 3.0 male-female cable for ESP32 to LCD connection (9 pins).
-    - Waterproof Usb C for wall mount.
+    - 2 * 3x7cm PCB prototype breadboards.
+    - USB male connector
+    - Black USB-C cable.
     - Iron soldering kit.
     - Small silica gel bag for the LCD case. (Optional).    
     - Silicone thermal gun for sealing the junctions. (Optional).
@@ -88,9 +91,9 @@ Some features have been removed from this version because there are not longer n
 ## How to build one
 
 1. Set a **public web server** to receive the information from the GPS and draw the route on a map.
-If you do not want or need this function you can forget this step and comment the following line on "src/main.cpp" -> loop():
+If you do not want or need this function you can forget this step and comment the following line on "src/gprs.cpp" -> useGPRS():
 ```
-// sendGPRS();
+// sendLocation();
 ```
 
 Otherwise: 
@@ -111,47 +114,54 @@ Otherwise:
 4. Set your VCode + Platformio environment with the project from esp32-bike-computer-main folder. This step is too long to describe here and there is a lot of information on internet about how to do it :wink:
      - Create a "include/secrets.h" file and fill it with your data. E.g:
      ```
+    #define TPMSMAC_FRONT "be:be:ca:fe:be:be"   //TPMS Front MAC Address
+    #define TPMSMAC_REAR "ca:fe:be:be:ca:fe"    //TPMS Rear MAC Address
     #define HTTP_SERVER "my.server.com"
     #define HTTP_PATH "/bikefiles"   // Should begin with "/" and end without it
-    #define GPRS_APN "yourPhoneOperatorAPN"
-    #define GPRS_USER ""
-    #define GPRS_PASS ""
     #define WEATHER_APIKEY "yourOpenweathermapsAPIKey"
     #define WEATHER_CITYID "3104324"    // Zaragoza,ES Look for your location: https://www.openweathermap.org/find
     #define MAPS_APIKEY "yourBingMapsAPIKey"
     #define WEB_PASS "user_id0_pass_set_on_the_database"
+    #define WIFI_SSID01 "SSID01_NAME"       // Configured on USB 4G Dongle
+    #define WIFI_PASS01 "SSID01_PASSWORD"   // Configured on USB 4G Dongle
+    #define WIFI_SSID02 "SSID02_NAME"       // Alternative. Eg: Phone hotspot
+    #define WIFI_PASS02 "SSID02_PASSWORD"   // Alternative. Eg: Phone hotspot
+     ```
+     - Take a look on "include/my_def.h" and change some values if necessary:
+     ``` 
+     #define BT_DEVICE_NAME "Jarvis"     // BLE device name
+     static unsigned char tpmsBatteyLow = 5;  // TPMS Battery low level
+     static unsigned char tpmsLevelX = XX;    // TPMS Pressure levels
+     #define TFT_TIMEMESSAGE 7000    // Phone alert message show time (7 sec)
+     static TimeChangeRule CEST = {"CEST", Last, Sun, Mar, 2, 120};     // Central European Summer Time
+     static TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};       // Central European Standard Time
+
      ```
      - Compile and upload it to the ESP32. 
      - Upload the "data" folder files to ESP32 SPIFFS.
 
 
-5. Build the PCB following the [schemes/main.fzz](schemes/main.fzz) or [schemes/main_v2.fzz](schemes/main_v2.fzz). If you want to fit it on a 3x7cm protoboard only the following ESP32 pins must be soldered: RST, SVP, 26, 18, 19, 33, 23, 5, 3.3V, 22, 21, 17, 16, GND, VCC. 
-     - [ESP32 pinout](docs/ESP32_D1_mini_pinout.png)
+5. Build the PCB following the [schemes/main_v1.fzz](schemes/main_v1.fzz). Only the outer pins need to be solder.
+     - [ESP32-S3 pinout](docs/esp32S3_pinout.png)
 
 
 ## Schemes and connections
-There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes](schemes) folder. There are created for soldering on a quick breadboard. I have glue a small square of plastic sponge to support the SIM808 module.
+There are some [Fritzing](https://fritzing.org/) schemes located on the [schemes](schemes) folder. They are designed for soldering on a quick breadboard.
 
-![Breadboard Scheme](docs/images/breadboardScheme.jpg)
+![Breadboard Scheme](docs/images/breadboard_v1.jpg)
 
 ![Breadboard Front with plastic support](docs/images/breadboardFront.jpg)
 
 ![Breadboard back](docs/images/breadboardBack.jpg)
 
 The connectors placement on the board are:
-- SIM808: S3-S9
-- ESP32 left: P3-P10,Q6
-- ESP32 right: G3-G8
-- Power terminal: C3 and C5
-
-There is a "v2" version that is untested, but the only change is the USB cable connector order for a better route on the breadboard, so it should work.
-
-![Breadboard Scheme v2](docs/images/breadboardScheme_v2.jpg)
+- Neo6M GPS: W10-T10
+- ESP32 up: K10-F10
+- Square LCD: "A" side external pins
+- Round LCD: L9-L3
 
 
 ## Improvements list
-
-- **A 3D design** for the ESP32+SIM808 case. ~~Now I am using a small plastic tapperware :sweat_smile:~~ Done. Take a look at [3d_designs](3d_designs) folder.
 
 - **Kickstand alert**<br>
     Using and ELM327 to communicate with the ECU, but I am not able to find the correct OBD PID. There are some projects to help with it, like: https://github.com/PowerBroker2/ELMduino
@@ -163,7 +173,7 @@ There is a "v2" version that is untested, but the only change is the USB cable c
     To receive bike location and ¿maybe? set configuration
 
 - **Web server for configuration**<br>
-    To change some values (API keys, passwords...) and save it to the EEPROM.  I had problems using the wifi and the BLE stack at the same time.
+    To change some values (API keys, passwords...) and save it to the EEPROM.
 
 - **Parking sensor.** ~~Because... Why not?~~ Done. Take a look at https://github.com/m-gracia/esp32-bike-computer-back
 
@@ -178,8 +188,12 @@ Many thanks to the programmers that works and maintain the libraries used on thi
 - <https://github.com/olikraus/u8g2>
 - <https://github.com/moononournation/Arduino_GFX>
 - <https://github.com/JChristensen/Timezone>
-- <https://github.com/vshymanskyy/TinyGSM>
+- <https://github.com/mikalhart/TinyGPSPlus>
 - <https://github.com/bblanchon/ArduinoJson>
+
+And thank you VANEP and UniquePete for your Fritzing desigs: 
+- <https://forum.fritzing.org/u/vanepp/summary>
+- <https://forum.fritzing.org/u/UniquePete/summary>
 
 
 ## Disclaimer
@@ -189,6 +203,6 @@ I'm not a professional programmer neither an electronics expert, I'm just making
 I want to share this to the community just in case someone else find it funny or usefull for his/her own project, I havent got other pretensions, so please:
 
 1. I'm pretty sure the code is not perfectly written and does not follow the standars or etiquette, it just works for me. I will be more than pleasured to hear improvements and learn.
-2. I have not tested so much this thing and sometimes it does have minor failures (GPS fail to get data, GPRS fail to connect to server...). I am happy with it but if you don't, please, don't waste your money.
+2. I have not tested so much this thing and sometimes it does have minor failures (GPS fail to get data, WIFI fails to connect to server...). I am happy with it but if you don't, please, don't waste your money.
 3. Use at your own risk. I'm not responsible for any damages, direct or indirect. Remember: "It works for me" is the only test I have done.
 4. I would be glad to read your comments, questions, doubts, jokes, etc. and will try to answer all of them, but I have made this on my spare time that is not so much, so don't expect a quick response. My apologies in advance.

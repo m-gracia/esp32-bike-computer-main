@@ -38,7 +38,7 @@ void setup() {
 
   pixel.begin();
   pixel.setBrightness(64);
-  for(int i=0;i<10; i++){  // Wait until the current is stabilized 0,5s each loop
+  for(int i=0;i<6; i++){  // Wait until the current is stabilized 0,5s each loop
     pixel.clear(); pixel.show();
     delay(250);
     pixel.fill(0xFF0000); pixel.show(); // Red    

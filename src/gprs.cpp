@@ -115,9 +115,7 @@ void getMaps(){
       }else if(tmapsStreet.length() > 4 && tmapsStreet.startsWith(String("Vía "))){
         tmapsStreet = tmapsStreet.substring(4);
       }
-      if (tmapsStreet.length() > 3 && tmapsStreet.startsWith(String("de "))){
-        tmapsStreet = tmapsStreet.substring(3);
-      }else if(tmapsStreet.length() > 4 && tmapsStreet.startsWith(String("del "))){
+      if(tmapsStreet.length() > 4 && tmapsStreet.startsWith(String("del "))){
         tmapsStreet = tmapsStreet.substring(4);
       }else if(tmapsStreet.length() > 6 && tmapsStreet.startsWith(String("de la "))){
         tmapsStreet = tmapsStreet.substring(6);
@@ -125,6 +123,8 @@ void getMaps(){
         tmapsStreet = tmapsStreet.substring(7);
       }else if(tmapsStreet.length() > 7 && tmapsStreet.startsWith(String("de los "))){
         tmapsStreet = tmapsStreet.substring(7);
+      }else if (tmapsStreet.length() > 3 && tmapsStreet.startsWith(String("de "))){
+        tmapsStreet = tmapsStreet.substring(3);
       }
 
       DEBUG_GPRS_PRINT("GPRS-M Street:");

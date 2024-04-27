@@ -64,15 +64,8 @@ class DistanceCharacteristicCallback: public BLECharacteristicCallbacks {
     unsigned char tbikeDistance = (unsigned char)str[0];
     
     if (bikeSpeed > 20) tbikeDistance = STATUS_OK;   // Do not show if the speed is > 20km/h
-    else {
-      if(tbikeDistance == STATUS_OK){ // Show others
-        DEBUG_BT_PRINTLN("BT Reset display");
-        bitSet(bikeDataChanged,7);
-        bitSet(bikeDataChanged,14);
-      } else bitSet(bikeDataChanged,15);
-
-      bikeDistance = tbikeDistance;
-    }
+    if (tbikeDistance != bikeDistance) bitSet(bikeDataChanged,15);
+    bikeDistance = tbikeDistance;
 
     DEBUG_BT_PRINT("BT Distance msg received: ");
     DEBUG_BT_PRINTLN(str.c_str());

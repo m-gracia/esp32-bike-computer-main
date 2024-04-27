@@ -164,10 +164,16 @@ void sendDisplay(){
       }
       
     } else {    // NO PHONE MESSAGES -> SHOW WALL DISTANCE OR OTHERS
-      if (bitRead(bikeDataChanged,12)){   // SPEED LIMIT
-        DEBUG_TFT_PRINTLN("SPEED LIMIT CHG");
+      if (bitRead(bikeDataChanged,12) || bitRead(bikeDataChanged,15)){   // SPEED LIMIT or DISTANCE
+        DEBUG_TFT_PRINTLN("SPEED LIMIT OR DISTANCE CHG");
         tftR->fillRect(70,70,100,100,BLACK);  // Clear image
-        tftR->fillArc(120,120,49,40,0,360,RED);   // Round signal
+        switch(bikeDistance){                 // Round signal
+              case 5: tftR->fillArc(120,120,49,40,0,360,RED);     break;  // Red
+              case 4: tftR->fillArc(120,120,49,40,0,360,YELLOW);  break;  // Yellow
+              case 3: tftR->fillArc(120,120,49,40,0,360,GREEN);   break;  // Green
+              case 2: tftR->fillArc(120,120,49,40,0,360,CYAN);    break;  // Cyan
+              default: tftR->fillArc(120,120,49,40,0,360,WHITE);  break;  // White
+        }
         tftR->setTextColor(WHITE);
         tftR->setFont(FONT_SIGNAL);
         
@@ -251,7 +257,7 @@ void sendDisplay(){
         tftS->print(bikeSatellites);
       }
 
-      if(bikeDistance != STATUS_OK){     // WALL DETECTED
+      /*if(bikeDistance != STATUS_OK){     // WALL DETECTED
         if(bitRead(bikeDataChanged,15)){
           DEBUG_TFT_PRINTLN("DIST CHG");
           tftS->fillRect(1,1,120,210,BLACK);
@@ -265,7 +271,7 @@ void sendDisplay(){
               case 1: break;
           }
         }
-      } else { // SHOW OTHERS
+      } else { */// SHOW OTHERS
         if (bitRead(bikeDataChanged,7)){  // DATE
           DEBUG_TFT_PRINTLN("DATE CHG");
           tftS->fillRect(1,1,120,110,BLACK);
@@ -281,7 +287,7 @@ void sendDisplay(){
           tftS->fillRect(1,110,120,100,BLACK); // Clear image
           printWeatherIcon(weatherIcon);
         }        
-      } //-- else SHOW OTHERS
+      //} //-- else SHOW OTHERS
     } // -- else if (bikeNotif == STATUS_WARN) 
     
     bikeDataChanged = 0;

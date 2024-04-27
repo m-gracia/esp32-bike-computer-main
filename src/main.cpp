@@ -51,7 +51,7 @@ void setup() {
   #endif
   DEBUG_PRINTLN("Manuel Gracia.Apr-2024");
   DEBUG_PRINTLN("https://github.com/m-gracia");
-  DEBUG_PRINTLN("esp32-bike-computer_20240407");
+  DEBUG_PRINTLN("esp32-bike-computer_20240427");
 
   // Init Setup
   initDisplay();

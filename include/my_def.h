@@ -96,6 +96,7 @@ static TinyGPSPlus gps;
 
 // Wifi
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <WiFiMulti.h>
 #include <ArduinoHttpClient.h>  // https://github.com/arduino-libraries/ArduinoHttpClient
 static WiFiMulti wifi_dev;
@@ -132,10 +133,10 @@ extern String weatherLocation;          // City
 //extern float weatherWind;             // Wind speed
 extern int weatherIcon;                 // Weather icon
 
-// Microsoft Maps
+// Azure Maps
 #define MAPS_TXT_SIZE 15
-static const char maps_server[] = "dev.virtualearth.net";
-static const int maps_port = 80;
+static const char maps_server[] = "atlas.microsoft.com";
+static const int maps_port = 443;
 static String maps_apikey = MAPS_APIKEY;    // Defined in secrets.h
 extern String mapsStreet;                   // Street
 extern int mapsSpeed;                       // Speed limit

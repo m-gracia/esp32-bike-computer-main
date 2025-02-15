@@ -3,7 +3,8 @@
 
 void initWifi();        // Initialize Wifi
 void getWeather();      // Get data from OpenWeatherMap
-void getMaps();         // Get data from Microsoft Maps
+void getMapsStreet();   // Get street data from Microsoft Maps
+void getMapsSpeed();    // Get speed limit data from Microsoft Maps
 void sendLocation();    // Send location to server
 void useGPRS();         // Centralized function to use GPRS
 

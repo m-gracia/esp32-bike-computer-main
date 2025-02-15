@@ -30,7 +30,7 @@ The project has been done thinking on the modularity, so new features can be add
 - Tire pressure level, temperature and low battery alert from TPMS BLE sensors.
 - Date, time and altitude from GPS.
 - Weather prediction from OpenWeatherMap.
-- Speed limit and street name from Microsoft Maps.
+- Speed limit and street name from Azure Maps.
 - Sends GPS latitude and longitude to a web server.
 - Shows the location from the web server on a map.
 
@@ -103,15 +103,18 @@ Otherwise:
 - Save both php files on a folder served by the web server.
 
 
-2. Get your OpenWeatherMap and Bing Maps API keys. You have to sign up on both services but the free tier should be enought.
+2. Get your OpenWeatherMap API keys. You have to sign up on the service but the free tier should be enought.
      - https://openweathermap.org/api
-     - https://www.bingmapsportal.com
 
 
-3. Get all components and stuff listed below. They could be obtained from "all purpose" web pages like Aliexpress or Amazon.
+3. Deploy an Azure Maps service and get the SAS Key. You must have a Microsoft Azure account, but the free tier should be enought.
+    - https://learn.microsoft.com/en-us/azure/azure-maps/quick-demo-map-app#prerequisites 
 
 
-4. Set your VCode + Platformio environment with the project from esp32-bike-computer-main folder. This step is too long to describe here and there is a lot of information on internet about how to do it :wink:
+4. Get all components and stuff listed below. They could be obtained from "all purpose" web pages like Aliexpress or Amazon.
+
+
+5. Set your VCode + Platformio environment with the project from esp32-bike-computer-main folder. This step is too long to describe here and there is a lot of information on internet about how to do it :wink:
      - Create a "include/secrets.h" file and fill it with your data. E.g:
      ```
     #define TPMSMAC_FRONT "be:be:ca:fe:be:be"   //TPMS Front MAC Address
@@ -120,7 +123,7 @@ Otherwise:
     #define HTTP_PATH "/bikefiles"   // Should begin with "/" and end without it
     #define WEATHER_APIKEY "yourOpenweathermapsAPIKey"
     #define WEATHER_CITYID "3104324"    // Zaragoza,ES Look for your location: https://www.openweathermap.org/find
-    #define MAPS_APIKEY "yourBingMapsAPIKey"
+    #define MAPS_APIKEY "yourAzureMapsSASKey"
     #define WEB_PASS "user_id0_pass_set_on_the_database"
     #define WIFI_SSID01 "SSID01_NAME"       // Configured on USB 4G Dongle
     #define WIFI_PASS01 "SSID01_PASSWORD"   // Configured on USB 4G Dongle
@@ -141,7 +144,7 @@ Otherwise:
      - Upload the "data" folder files to ESP32 SPIFFS.
 
 
-5. Build the PCB following the [schemes/main_v1.fzz](schemes/main_v1.fzz). Only the outer pins need to be solder.
+6. Build the PCB following the [schemes/main_v1.fzz](schemes/main_v1.fzz). Only the outer pins need to be solder.
      - [ESP32-S3 pinout](docs/esp32S3_pinout.png)
 
 
@@ -167,7 +170,7 @@ The connectors placement on the board are:
     Using and ELM327 to communicate with the ECU, but I am not able to find the correct OBD PID. There are some projects to help with it, like: https://github.com/PowerBroker2/ELMduino
 
 - **Turn by turn indications**<br>
-    I am not able to find or build an application to send the indications by BLE. Maybe could find an aproach using Msoft Maps?...
+    I am not able to find or build an application to send the indications by BLE. Maybe could find an aproach using Azure Maps?...
 
 - **Telegram communication**<br>
     To receive bike location and ¿maybe? set configuration

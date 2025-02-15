@@ -60,11 +60,12 @@ void getWeather(){
   DEBUG_GPRS_PRINTLN("GPRS-W Disconnected");
 }
 
-void getMaps(){
+void getMapsStreet(){
   if (bikeGPS == STATUS_OK || bikeGPS == STATUS_WARN){  // GPS data available
-    WiFiClient wifi_client;
+    WiFiClientSecure wifi_client;
+    wifi_client.setInsecure();
     String http_url;
-    http_url = "/REST/v1/Routes/SnapToRoad?pts="+String(bikeLatitude,4)+","+String(bikeLongitude,4)+"&intpl=false&spdl=true&spu=KPH&key="+maps_apikey;
+    http_url = "/search/address/reverse/json?api-version=1.0&query="+String(bikeLatitude,4)+","+String(bikeLongitude,4)+"&subscription-key="+maps_apikey;
     DEBUG_GPRS_PRINT("Maps URL: ");
     DEBUG_WEB_SECRETPRINTLN(http_url);
 
@@ -89,8 +90,7 @@ void getMaps(){
         return;
       }
 
-      String tmapsStreet = root["resourceSets"][0]["resources"][0]["snappedPoints"][0]["name"].as<const char*>();
-      int tmapsSpeed = root["resourceSets"][0]["resources"][0]["snappedPoints"][0]["speedLimit"].as<int>();
+      String tmapsStreet = root["addresses"][0]["address"]["streetName"].as<const char*>();
 
       // Clean the street name
       // TODO - Use an array and a loop instead (more "elegant" way)
@@ -129,13 +129,55 @@ void getMaps(){
 
       DEBUG_GPRS_PRINT("GPRS-M Street:");
       DEBUG_GPRS_PRINTLN(tmapsStreet);
-      DEBUG_GPRS_PRINT("GPRS-M Speed:");
-      DEBUG_GPRS_PRINTLN(tmapsSpeed);
 
       if (tmapsStreet != mapsStreet){
         mapsStreet = tmapsStreet;
         bitSet(bikeDataChanged,11);
       }
+    }
+    
+    maps_client.stop();
+    DEBUG_GPRS_PRINTLN("GPRS-M Disconnected");
+
+  } else {
+    DEBUG_GPRS_PRINTLN("GPRS-M No GPS data");
+  }
+}
+
+void getMapsSpeed(){
+  if (bikeGPS == STATUS_OK || bikeGPS == STATUS_WARN){  // GPS data available
+    WiFiClientSecure wifi_client;
+    wifi_client.setInsecure();
+    String http_url;
+    http_url = "/traffic/flow/segment/json?api-version=1.0&style=absolute&unit=KMPH&zoom=22&query="+String(bikeLatitude,4)+","+String(bikeLongitude,4)+"&subscription-key="+maps_apikey;
+    DEBUG_GPRS_PRINT("Maps URL: ");
+    DEBUG_WEB_SECRETPRINTLN(http_url);
+
+    HttpClient maps_client(wifi_client, maps_server, maps_port);
+
+    if( maps_client.get(http_url) != 0){
+      DEBUG_GPRS_PRINTLN("GPRS-M fail getting data");
+      if (bikeGPRS != STATUS_WARN) bitSet(bikeDataChanged,2);
+      bikeGPRS = STATUS_WARN;
+    } else {
+      DEBUG_GPRS_PRINTLN("GPRS-M connected OK");
+      if (bikeGPRS != STATUS_OK) bitSet(bikeDataChanged,2);
+      bikeGPRS = STATUS_OK;
+      
+      String result = maps_client.responseBody();
+      DEBUG_GPRS_PRINTLN("GPRS-M Readed:");
+      DEBUG_GPRS_PRINTLN(result);
+
+      JsonDocument root;
+      if (deserializeJson(root, result)) { 
+        DEBUG_GPRS_PRINTLN("parseObject() failed");
+        return;
+      }
+
+      int tmapsSpeed = root["flowSegmentData"]["freeFlowSpeed"].as<int>();
+
+      DEBUG_GPRS_PRINT("GPRS-M Speed:");
+      DEBUG_GPRS_PRINTLN(tmapsSpeed);
 
       if (tmapsSpeed != mapsSpeed){
         mapsSpeed = tmapsSpeed;
@@ -215,7 +257,8 @@ void useGPRS(){
 
     //Check for Maps information
     if (timerMaps < millis()){
-      getMaps();
+      getMapsStreet();
+      getMapsSpeed();
       timerMaps = millis() + 20000; // 20 sec
     }
   }

@@ -12,10 +12,21 @@
  * a=altitude
  */
 
+/* ********************* */
+/* CHANGE TO YOUR VALUES */
+/* ********************* */
+$DB_HOST = 'localhost';
+$DB_DATABASE = 'your_database_name';
+$DB_USERNAME = 'mariadb_username';
+$DB_PASSWORD = 'strong_password';
+/* ***************************** */
+/* DO NOT CHANGE BELOW THIS LINE */
+/* ***************************** */
+
 if (isset($_GET['u']) && isset($_GET['p'])){
 	//SQL connection
 	try {
-		$conn = new PDO ("mysql:host=localhost; dbname=<DATABASE>", "<USERNAME>","<STRONG_PASSWORD>");
+		$conn = new PDO ("mysql:host=$DB_HOST; dbname=$DB_DATABASE", "$DB_USERNAME","$DB_PASSWORD");
 		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 		}
 	catch (PDOException $e ) {
